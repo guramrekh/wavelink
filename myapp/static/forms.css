@@ -1,0 +1,66 @@
+:root {
+    --primary: #6c3baa;
+    --secondary: rgb(87, 58, 155);
+    --light: #f8f9fa;
+    --dark: #212529;
+}
+
+.logo-text {
+    color: var(--primary);
+}
+
+.btn-primary {
+    background-color: var(--primary);
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary);
+    box-shadow: 0 6px 15px rgba(72, 34, 148, 0.4);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: var(--dark);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.form-actions {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.form-error {
+    color: #d93025;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+}
+
+.form-error-input {
+    border: 1.5px solid #d93025 !important;
+    /* background-color: #fff6f6; */
+}
+
+
+.form-footer {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+
