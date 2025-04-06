@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wavelink</title>
+    <link rel="stylesheet", href="../static/styles.css"></link>
+        
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <span class="logo-icon">〰️</span>
+            <h1 class="logo-text">WaveLink</h1>
+        </div>
+        <p class="tagline">Connect seamlessly across all platforms</p>
+        <div class="buttons">
+            <a href="{{ url_for('main.login') }}" class="btn btn-primary">Login</a>
+            <a href="{{ url_for('main.register') }}" class="btn btn-outline">Register</a>
+        </div>
+    </div>
+    
+    <svg class="wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+        <path fill="#4361ee" fill-opacity="0.2" d="M0,288L48,272C96,256,192,224,288,208C384,192,480,192,576,208C672,224,768,256,864,261.3C960,267,1056,245,1152,224C1248,203,1344,181,1392,170.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+    </svg>
+</body>
+</html>
