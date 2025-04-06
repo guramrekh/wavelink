@@ -1,0 +1,52 @@
+# Byte-compiled / optimized / package files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.venv/
+env/
+ENV/
+*.venv
+
+# Flask & Python environment files
+instance/
+*.log
+*.pot
+*.pyc
+*.pyo
+*.swp
+
+# Database & migrations
+migrations/
+*.sqlite3
+*.db
+*.sql
+*.bak
+
+# Environment variables
+.env
+*.env
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.iml
+
+# Docker files
+docker-compose.override.yml
+*.pid
+*.sock
+
+# Build & Dependency files
+dist/
+build/
+*.egg-info/
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# MacOS / Windows system files
+.DS_Store
+Thumbs.db
