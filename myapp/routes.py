@@ -7,12 +7,14 @@ bp = Blueprint('main', __name__)
 def home():
     return render_template('home.html')
 
+
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
         flash(f'Account created for {form.username.data}!', 'success')
     return render_template('login.html', form=form)
+
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
