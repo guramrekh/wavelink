@@ -1,5 +1,5 @@
 from myapp import create_app
-from myapp.db import db
+from myapp.extensions import db
 from myapp import models
 
 app = create_app()

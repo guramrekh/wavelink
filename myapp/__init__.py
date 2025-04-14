@@ -23,12 +23,12 @@ def create_app(test_config=None):
     from . import routes 
     app.register_blueprint(routes.bp)  
 
-    from myapp.db import db
+    from myapp.extensions import db, bcrypt, login_manager
     db.init_app(app)
-    
+    bcrypt.init_app(app)
+    login_manager.init_app(app)
 
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
+    login_manager.login_view = 'main.login' 
+    login_manager.login_message_category = 'info'
 
     return app

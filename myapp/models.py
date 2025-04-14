@@ -1,7 +1,12 @@
 from datetime import datetime
-from myapp.db import db
+from myapp.extensions import db, login_manager
+from flask_login import UserMixin
 
-class User(db.Model):
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(32), unique=True, nullable=False)
     email = db.Column(db.String(64), unique=True, nullable=False)
@@ -28,7 +33,6 @@ class Playlist(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
-    songs = db.relationship("Song", backref="playlist", lazy=True)
     comments = db.relationship("Comment", backref="playlist", lazy=True)
     likes = db.relationship("Like", backref="playlist", lazy=True)
     tracks = db.relationship('PlaylistTrack', backref='playlist', lazy='dynamic', cascade="all, delete-orphan")
