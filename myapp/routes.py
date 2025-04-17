@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, flash, redirect, url_for
+from flask import Blueprint, render_template, flash, redirect, request, url_for
 from flask_login import login_user, current_user, logout_user, login_required 
 
 from .models import User
 from .forms import RegistrationForm, LoginForm
 from .extensions import db, bcrypt
+
 
 bp = Blueprint('main', __name__)
 
@@ -36,11 +37,18 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user)
-            return redirect(url_for('main.home'))
+            login_user(user, remember=False)
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('main.home'))
         else:
             flash('Login unsuccessful. Please check username and password', 'danger')
     return render_template('login.html', form=form)
+
+
+@bp.route('/home')
+@login_required
+def home():
+    return render_template('home.html', playlists=current_user.playlists)
 
 
 @bp.route("/logout")
@@ -48,10 +56,4 @@ def logout():
     logout_user()
     return redirect(url_for('main.index'))
 
-
-@bp.route('/home')
-@login_required
-def home():
-    playlists = current_user.playlists
-    return render_template('home.html', playlists=playlists)
 

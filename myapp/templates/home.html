@@ -1,17 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home.css') }}">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - WaveLink</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <h1> home page </h1>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('main.home') }}" class="nav-logo">WaveLink</a>
+            <div class="nav-links">
+                <a href="#">Account</a>
+                <a href="{{ url_for('main.logout') }}">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="profile-container">
+        <section class="playlists-section">
+            <div class="playlist-section-header">
+                <h2>My Playlists</h2>
+                <a href="#" class="btn btn-primary create-playlist-btn" title="Create New Playlist">
+                    <i class="fas fa-plus"></i>
+                </a>            
+            </div>
+            {% if playlists %}
+                {% for playlist in playlists %}
+                <details class="playlist-item">
+                    <summary class="playlist-header">
+                        <img src="{{ url_for('static', filename='pictures/default_cover.jpg') }}"
+                            alt="{{ playlist.name }} cover"
+                            class="playlist-cover-thumb">
+                        <span class="playlist-name">{{ playlist.name }}</span>
+                        <i class="fas fa-chevron-down details-arrow"></i>
+                        <div class="playlist-info">
+                            <p>{{ playlist.description }}</p>
+                        </div>
+                        <p class="playlist-creation-date">Created on {{ playlist.creation_date.strftime('%d-%b-%y') }}</p>
+                    </summary>
+                    <div class="playlist-content">
+                        {% if playlist.tracks %}
+                            <div class="track-list-header">
+                                <span class="header-number">#</span>
+                                <span class="header-title">Title</span>
+                                <span class="header-album">Album</span>
+                                <span class="header-duration"><i class="far fa-clock"></i></span>
+                            </div> 
+                            <ol class="track-list">
+                                {% for playlist_track in playlist.tracks %}
+                                    <li class="track-item">
+                                        <span class="track-number">{{ loop.index }}</span>
+                                        <div class="track-details">
+                                            <span class="track-title">{{ playlist_track.track.title }}</span>
+                                            <span class="track-artist">{{ playlist_track.track.artist }}</span>
+                                        </div>
+                                        <span class="track-album">{{ playlist_track.track.album or 'Unknown' }}</span>
+                                        <span class="track-duration">{{ playlist_track.track.duration or '--:--' }}</span>
+                                    </li>
+                                {% else %}
+                                    <li class="no-tracks">No tracks in this playlist yet.</li>
+                                {% endfor %}
+                            </ol>
+                        {% else %}
+                            <p class="no-tracks">No tracks in this playlist yet.</p>
+                        {% endif %}
+                    </div>
+                </details>
+                {% endfor %}
+            {% else %}
+                <p>You haven't created any playlists yet.</p>
+            {% endif %}
+        </section>
+
+        <aside class="user-info-section">
+            <img src="{{ url_for('static', filename='pictures/default_pfp.jpg') }}" alt="Profile Picture" class="profile-pic">
+            <h3>{{ current_user.username }}</h3>
+            <p class="user-bio">{{ current_user.bio or 'No bio provided.' }}</p>
+            <hr class="info-divider">
+            <p><strong>Playlists:</strong> {{ playlists|length }}</p>
+        </aside>
+    </main>
 
 </body>
 </html>

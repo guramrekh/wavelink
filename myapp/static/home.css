@@ -1,0 +1,441 @@
+
+:root {
+    --primary: #4361ee;
+    --secondary: #3a0ca3;
+    --light: #f8f9fa;
+    --dark: #212529;
+}
+
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    display: block; 
+    height: auto;
+    min-height: 100vh;
+    align-items: initial;
+    justify-content: initial; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+}
+
+
+.navbar {
+    background-color: var(--primary);
+    color: var(--light);
+    padding: 0.8rem 0; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: sticky; 
+    top: 0;
+    z-index: 1000; 
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px; 
+    margin: 0 auto; 
+    padding: 0 2rem; 
+}
+
+.nav-logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--light);
+    text-decoration: none;
+}
+
+.nav-links a {
+    color: var(--light);
+    text-decoration: none;
+    margin-left: 1.5rem;
+    font-size: 1rem;
+    transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+    color: var(--dark);
+}
+
+
+.profile-container {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr; 
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 2rem auto; 
+    padding: 0 2rem; 
+}
+
+
+.user-info-section {
+    background-color: #e9ecef; 
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    height: fit-content; /* as tall as its content */
+    position: sticky; 
+    top: calc(2rem + 60px); 
+}
+
+.profile-pic {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover; 
+    margin-bottom: 1rem;
+    border: 3px solid var(--light);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.user-info-section h3 {
+    margin-bottom: 0.5rem;
+    color: var(--dark);
+    font-size: 1.6rem;
+}
+
+.user-bio {
+    font-size: 0.95rem;
+    color: #6c757d; 
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+.info-divider {
+    border: 0;
+    height: 1px;
+    background-color: #ced4da;
+    margin: 1rem 0;
+}
+
+.user-info-section p {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.user-info-section p strong {
+    color: rgba(0, 0, 0, 0.85);
+}
+
+
+.playlists-section {
+    background-color: var(--light);
+    padding: 1.5rem;
+    height: fit-content; 
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.playlist-section-header {
+    display: flex;                 
+    justify-content: space-between;
+    align-items: center;           
+    margin-bottom: 1.5rem;         
+    flex-wrap: wrap;               
+    gap: 1rem;                     
+}
+
+.playlists-section h2 {
+    margin-bottom: 0; 
+    color: var(--dark);
+    font-weight: 600;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 0.5rem;
+}
+
+.create-playlist-btn {
+    margin-top: 0; 
+}
+
+.playlist-item {
+    margin-bottom: 0.75rem;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid #dee2e6; 
+}
+
+.playlist-header {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    background-color: var(--dark);
+    color: var(--light);
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 500;
+    list-style: none; 
+    transition: background-color 0.2s ease;
+    position: relative; /* of the arrow */
+    padding-bottom: 2.5rem;
+}
+
+.playlist-header:hover {
+    background-color: #343a40;
+}
+
+.playlist-header::-webkit-details-marker {
+    display: none;
+}
+
+.playlist-cover-thumb {
+    width: 55px; 
+    height: 55px; 
+    object-fit: cover; 
+    border-radius: 4px; 
+    flex-shrink: 0; 
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+}
+
+.playlist-name {
+    flex-grow: 1; 
+    font-size: 1.5rem;
+    align-self: center;
+}
+
+.details-arrow {
+    margin-left: auto; 
+    font-size: 0.9em;
+    transition: transform 0.2s ease-in-out;
+    color: rgba(255, 255, 255, 0.7); 
+    align-self: center; 
+    padding-left: 0.5rem;
+}
+
+.playlist-item[open] > summary .details-arrow {
+    transform: rotate(180deg);
+}
+
+.playlist-item[open] > .playlist-header {
+   border-bottom-left-radius: 0;
+   border-bottom-right-radius: 0;
+}
+
+.playlist-creation-date {
+    position: absolute;
+    bottom: 0.75rem;  
+    right: 1.5rem;   
+    font-size: 0.8em; 
+    color: rgba(255, 255, 255, 0.7); 
+    margin: 0; 
+    line-height: 1; 
+}
+
+.playlist-info {
+    width: 100%;   /* Force this block onto a new line */
+    font-size: 0.85em;
+    color: rgba(255, 255, 255, 0.8); 
+    padding-left: calc(55px + 1rem); 
+    padding-top: 0.2rem; 
+    padding-bottom: 0.5rem;
+}
+
+.playlist-info em {
+    color: #6c757d;
+}
+
+.playlist-info p {
+    margin: 0.1rem 0; 
+    line-height: 1.3; 
+}
+.playlist-info p strong {
+    color: rgba(255, 255, 255, 0.9); 
+}
+
+.playlist-info a {
+    color: var(--primary);
+    text-decoration: none;
+}
+.playlist-info a:hover {
+    text-decoration: underline;
+}
+
+
+.playlist-content {
+    padding: 0.5rem 0; 
+    background-color: #ffffff;
+    border-top: 1px solid #dee2e6;
+    color: var(--dark);
+}
+
+
+.track-list-header {
+    display: grid;
+    grid-template-columns: 2em minmax(0, 2fr) minmax(0, 3.5fr) 4em; 
+    gap: 1rem;
+    padding: 0.5rem 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    color: #6c757d;
+    font-size: 0.85em;
+    letter-spacing: 0.05em;
+}
+.track-list-header .header-album {
+    text-align: center; 
+}
+.track-list-header .header-duration {
+    text-align: right;
+    margin-right: 5px;
+}
+
+
+.track-list {
+    list-style: none; 
+    padding: 0;
+    margin: 0;
+}
+
+.track-item {
+    display: grid; 
+    grid-template-columns: 2em minmax(0, 2fr) minmax(0, 3.5fr) 4em; 
+    gap: 1rem; 
+    align-items: center; 
+    padding: 0.8rem 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 0.9rem;
+}
+.track-item:last-child {
+    border-bottom: none;
+}
+.track-item:hover {
+    background-color: #f8f9fa; 
+}
+
+.track-number {
+    color: #6c757d; 
+    width: 1em;     
+    margin-right: 0;
+    flex-shrink: 0;
+    font-size: 0.9em;
+}
+
+.track-details {
+    display: flex;
+    flex-direction: column; /* Stack title and artist */
+    overflow: hidden;
+}
+
+.track-title {
+    font-weight: 500;
+    color: var(--dark);
+    margin-bottom: 0.2rem; 
+    font-size: 0.95rem; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; /* Add ... for overflow */
+}
+
+.track-artist {
+    font-size: 0.85rem; 
+    color: #495057;
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+}
+
+.track-album {
+    font-size: 0.9rem;
+    color: #495057;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+.track-duration {
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-align: right; 
+    width: 4em; 
+    white-space: nowrap;
+}
+
+.no-tracks {
+    padding: 1rem 1.5rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+
+.icon {
+    color: var(--primary); 
+    width: 20px; 
+    text-align: center;
+}
+
+.create-playlist-btn {   /* Inherits .btn styles */
+    margin-top: 1.5rem;
+    text-align: right;
+}
+
+
+
+@media (max-width: 992px) {
+    .profile-container {
+        grid-template-columns: 2fr 1fr; 
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        grid-template-columns: 1fr; 
+    }
+
+    .user-info-section {
+        position: static;       /* Remove sticky positioning on mobile */
+        margin-bottom: 2rem;    /* Add space below user info when stacked */
+    }
+    .nav-container {
+        padding: 0 1rem; 
+    }
+    .profile-container {
+        padding: 0 1rem; 
+        margin-top: 1rem;
+    }
+    .nav-logo {
+        font-size: 1.5rem;
+    }
+    .nav-links a {
+        margin-left: 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-logo {
+        font-size: 1.3rem;
+    }
+    .nav-links {
+        display: flex;
+        flex-direction: column; 
+        align-items: flex-end; 
+    }
+    .nav-links a {
+        margin-left: 0;
+        margin-top: 0.3rem;
+    }
+    .profile-pic {
+        width: 100px;
+        height: 100px;
+    }
+    .user-info-section h3 {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .track-item {
+        grid-template-columns: 2em minmax(0, 1fr) 4em; /* hide album on small screens */
+        gap: 0.75rem;
+    }
+    .track-album {
+        display: none; /* Hide album column */
+    }
+    .track-list-header {
+        grid-template-columns: 2em minmax(0, 1fr) 4em;
+        gap: 0.75rem;
+    }
+    .track-list-header .header-album {
+        display: none;
+    }
+   
+}
