@@ -49,12 +49,32 @@ def login():
     return render_template('login.html', form=form)
 
 
+def formatted_total_duration(playlists):
+    total_duration_list = []
+
+    for playlist in playlists:
+        total_seconds = playlist.total_duration
+        if total_seconds <= 0:
+            total_duration_list.append("N/A")
+            continue
+
+        hours = total_seconds // 3600
+        minutes = (total_seconds % 3600) // 60
+        seconds = (total_seconds % 3600) % 60
+        if hours < 1:
+            total_duration_list.append(f"{minutes} min {seconds} sec")
+        else: 
+            total_duration_list.append(f"{hours} hr {minutes} min")
+
+    return total_duration_list
+
 @bp.route('/home')
 @login_required
 def home():
     user_pfp = url_for('static', filename='pictures/' + current_user.profile_picture)
     playlists=current_user.playlists
-    return render_template('home.html', playlists=playlists, user_pfp=user_pfp)
+    total_duration_list = formatted_total_duration(playlists)
+    return render_template('home.html', playlists=playlists, user_pfp=user_pfp, total_durations=total_duration_list)
 
 
 def save_picture(form_picture):
@@ -89,7 +109,8 @@ def account():
 
     user_pfp = url_for('static', filename='pictures/' + current_user.profile_picture)
     playlists=current_user.playlists
-    return render_template('account.html', playlists=playlists, form=form, user_pfp=user_pfp)
+    total_duration_list = formatted_total_duration(playlists)
+    return render_template('account.html', playlists=playlists, form=form, user_pfp=user_pfp, total_durations=total_duration_list)
 
 
 @bp.route('/logout')

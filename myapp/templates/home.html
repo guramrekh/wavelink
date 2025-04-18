@@ -21,61 +21,77 @@
     </div>
   </nav>
 
-  <main class="profile-container">
+  <main class="home-container">
     <section class="playlists-section">
       <div class="playlist-section-header">
         <h2>My Playlists</h2>
-        <a href="#" class="btn btn-primary create-playlist-btn" title="Create New Playlist">
+        <!-- <a href="#" class="btn btn-primary create-playlist-btn" title="Create New Playlist">
           <i class="fas fa-plus"></i>
-        </a>
+        </a> -->
       </div>
       {% if playlists %}
         {% for playlist in playlists %}
-        <details class="playlist-item">
-          <summary class="playlist-header">
-            <img src="{{ url_for('static', filename='pictures/default_cover.jpg') }}"
+          <details class="playlist-item">
+            <summary class="playlist-header">
+              <img src="{{ url_for('static', filename='pictures/default_cover.jpg') }}"
                 alt="{{ playlist.name }} cover" class="playlist-cover-thumb">
-            <span class="playlist-name">{{ playlist.name }}</span>
-            <i class="fas fa-chevron-down details-arrow"></i>
-            <div class="playlist-info">
-              <p>{{ playlist.description or '' }}</p>
-            </div>
-            <div class="playlist-meta">
-              <span class="playlist-visibility">{{ playlist.visibility|capitalize }}</span>
-              <span class="meta-separator">|</span>
-              <span class="playlist-date"> 
-                Created on {{ playlist.creation_date.strftime('%d-%b-%y') }}
-              </span>
-          </div>
-          </summary>
+
+              <div class="playlist-header-main">
+                <span class="playlist-name">{{ playlist.name }}</span>
+                <div class="playlist-stats header-stats">
+                  <span class="playlist-song-count" title="Number of songs">
+                    {{ playlist.tracks.count() }} songs
+                  </span>
+                  <span class="meta-separator stats-separator">·</span>
+                  <span class="playlist-duration" title="Total duration">
+                    {{ total_durations[loop.index0] }}
+                  </span>
+                </div>
+              </div>
+
+              <i class="fas fa-chevron-down details-arrow"></i>
+
+              <div class="playlist-info">
+                <p>{{ playlist.description or '' }}</p>
+              </div>
+
+              <div class="playlist-meta">
+                <span class="playlist-visibility">{{ playlist.visibility|capitalize }}</span>
+                <span class="meta-separator">|</span>
+                <span class="playlist-date">
+                  Created on {{ playlist.creation_date.strftime('%d-%b-%y') }}
+                </span>
+              </div>
+            </summary>
+            
             <div class="playlist-content">
               {% if playlist.tracks %}
-              <div class="track-list-header">
-                <span class="header-number">#</span>
-                <span class="header-title">Title</span>
-                <span class="header-album">Album</span>
-                <span class="header-duration"><i class="far fa-clock"></i></span>
-              </div>
-              <ol class="track-list">
-                {% for playlist_track in playlist.tracks %}
-                <li class="track-item">
-                  <span class="track-number">{{ loop.index }}</span>
-                  <div class="track-details">
-                    <span class="track-title">{{ playlist_track.track.title }}</span>
-                    <span class="track-artist">{{ playlist_track.track.artist }}</span>
-                  </div>
-                  <span class="track-album">{{ playlist_track.track.album or 'Unknown' }}</span>
-                  <span class="track-duration">{{ playlist_track.track.duration|format_duration }}</span>
-                </li>
-                {% else %}
-                <li class="no-tracks">No tracks in this playlist yet.</li>
-                {% endfor %}
-              </ol>
+                <div class="track-list-header">
+                  <span class="header-number">#</span>
+                  <span class="header-title">Title</span>
+                  <span class="header-album">Album</span>
+                  <span class="header-duration"><i class="far fa-clock"></i></span>
+                </div>
+                <ol class="track-list">
+                  {% for playlist_track in playlist.tracks %}
+                  <li class="track-item">
+                    <span class="track-number">{{ loop.index }}</span>
+                    <div class="track-details">
+                      <span class="track-title">{{ playlist_track.track.title }}</span>
+                      <span class="track-artist">{{ playlist_track.track.artist }}</span>
+                    </div>
+                    <span class="track-album">{{ playlist_track.track.album or 'Unknown' }}</span>
+                    <span class="track-duration">{{ playlist_track.track.duration|format_duration }}</span>
+                  </li>
+                  {% else %}
+                  <li class="no-tracks">No tracks in this playlist yet.</li>
+                  {% endfor %}
+                </ol>
               {% else %}
-              <p class="no-tracks">No tracks in this playlist yet.</p>
+                <p class="no-tracks">No tracks in this playlist yet.</p>
               {% endif %}
             </div>
-        </details>
+          </details>
         {% endfor %}
       {% else %}
         <p>You haven't created any playlists yet.</p>

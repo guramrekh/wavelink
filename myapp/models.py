@@ -37,6 +37,10 @@ class Playlist(db.Model):
     likes = db.relationship("Like", backref="playlist", lazy=True)
     tracks = db.relationship('PlaylistTrack', backref='playlist', lazy='dynamic', cascade="all, delete-orphan")
 
+    @property
+    def total_duration(self):
+        return sum(pt.track.duration or 0 for pt in self.tracks.all())
+
     def __repr__(self):
         return f"<Playlist: name='{self.name}', author_id={self.user_id}, visibility='{self.visibility}', created='{self.creation_date}'>"
 
