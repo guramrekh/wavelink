@@ -1,9 +1,13 @@
-from flask import Blueprint, render_template, flash, redirect, request, url_for
+from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app
 from flask_login import login_user, current_user, logout_user, login_required 
 
-from .models import User
-from .forms import RegistrationForm, LoginForm
-from .extensions import db, bcrypt
+from myapp.models import User
+from myapp.forms import RegistrationForm, LoginForm, AccountUpdateForm
+from myapp.extensions import db, bcrypt
+
+import secrets 
+import os 
+from PIL import Image
 
 
 bp = Blueprint('main', __name__)
@@ -48,10 +52,47 @@ def login():
 @bp.route('/home')
 @login_required
 def home():
-    return render_template('home.html', playlists=current_user.playlists)
+    user_pfp = url_for('static', filename='pictures/' + current_user.profile_picture)
+    playlists=current_user.playlists
+    return render_template('home.html', playlists=playlists, user_pfp=user_pfp)
 
 
-@bp.route("/logout")
+def save_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    
+    picture_path = os.path.join(current_app.root_path, 'static/pictures', picture_fn)
+
+    output_size = (120, 120)
+    image = Image.open(form_picture)
+    image.thumbnail(output_size)
+    image.save(picture_path)
+
+    return picture_fn
+
+@bp.route('/account', methods=['GET', 'POST'])
+@login_required
+def account():
+    form = AccountUpdateForm()
+    if form.validate_on_submit():
+        if form.profile_picture.data:
+            current_user.profile_picture = save_picture(form.profile_picture.data)
+        current_user.username = form.username.data
+        current_user.bio = form.bio.data
+        db.session.commit()
+        flash('Your account has been updated!', 'success')
+        return redirect(url_for('main.account'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.bio.data = current_user.bio
+
+    user_pfp = url_for('static', filename='pictures/' + current_user.profile_picture)
+    playlists=current_user.playlists
+    return render_template('account.html', playlists=playlists, form=form, user_pfp=user_pfp)
+
+
+@bp.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('main.index'))

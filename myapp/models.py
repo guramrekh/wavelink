@@ -47,6 +47,7 @@ class Track(db.Model):
     title = db.Column(db.String(128), nullable=False)
     artist = db.Column(db.String(128), nullable=False)
     album = db.Column(db.String(128)) 
+    duration = db.Column(db.Integer)
 
     def __repr__(self):
         return f"<Track: title='{self.title}', artist='{self.artist}', external_id='{self.external_id}'>"

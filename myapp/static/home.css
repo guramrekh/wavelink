@@ -33,7 +33,7 @@ body {
     align-items: center;
     max-width: 1200px; 
     margin: 0 auto; 
-    padding: 0 2rem; 
+    padding: 0 0.8rem; 
 }
 
 .nav-logo {
@@ -129,21 +129,22 @@ body {
     display: flex;                 
     justify-content: space-between;
     align-items: center;           
-    margin-bottom: 1.5rem;         
+    margin-bottom: 2rem;         
     flex-wrap: wrap;               
     gap: 1rem;                     
 }
 
 .playlists-section h2 {
-    margin-bottom: 0; 
+    margin-bottom: auto; 
     color: var(--dark);
     font-weight: 600;
     border-bottom: 2px solid var(--primary);
     padding-bottom: 0.5rem;
 }
 
-.create-playlist-btn {
-    margin-top: 0; 
+.create-playlist-btn {   /* Inherits .btn styles */
+    margin-top: auto;
+    text-align: right;
 }
 
 .playlist-item {
@@ -211,15 +212,26 @@ body {
    border-bottom-right-radius: 0;
 }
 
-.playlist-creation-date {
+.playlist-meta {
     position: absolute;
-    bottom: 0.75rem;  
-    right: 1.5rem;   
-    font-size: 0.8em; 
-    color: rgba(255, 255, 255, 0.7); 
-    margin: 0; 
-    line-height: 1; 
+    bottom: 0.75rem;
+    right: 1.5rem;
+    display: flex;
+    align-items: center;
+    font-size: 0.8em;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1;
 }
+.meta-separator {
+    margin-left: 0.35rem;
+    margin-right: 0.35rem; 
+    color: rgba(255, 255, 255, 0.5);
+}
+.playlist-date {
+    margin: 0;
+}
+
 
 .playlist-info {
     width: 100%;   /* Force this block onto a new line */
@@ -274,7 +286,7 @@ body {
 }
 .track-list-header .header-duration {
     text-align: right;
-    margin-right: 5px;
+    margin-right: 8px;
 }
 
 
@@ -310,7 +322,7 @@ body {
 
 .track-details {
     display: flex;
-    flex-direction: column; /* Stack title and artist */
+    flex-direction: column;
     overflow: hidden;
 }
 
@@ -321,7 +333,7 @@ body {
     font-size: 0.95rem; 
     white-space: nowrap; 
     overflow: hidden; 
-    text-overflow: ellipsis; /* Add ... for overflow */
+    text-overflow: ellipsis; /* ... for overflow */
 }
 
 .track-artist {
@@ -360,11 +372,6 @@ body {
     color: var(--primary); 
     width: 20px; 
     text-align: center;
-}
-
-.create-playlist-btn {   /* Inherits .btn styles */
-    margin-top: 1.5rem;
-    text-align: right;
 }
 
 

@@ -53,9 +53,7 @@ input[type="email"] {
 
 .form-error-input {
     border: 1.5px solid #d93025 !important;
-    /* background-color: #fff6f6; */
 }
-
 
 .form-footer {
     margin-top: 1.5rem;

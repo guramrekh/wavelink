@@ -10,7 +10,8 @@ env/
 ENV/
 *.venv
 
-scripts/
+
+helper_scripts/
 
 # Flask & Python environment files
 instance/

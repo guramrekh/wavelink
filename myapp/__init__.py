@@ -31,4 +31,17 @@ def create_app(test_config=None):
     login_manager.login_view = 'main.login' 
     login_manager.login_message_category = 'info'
 
+
+    app.jinja_env.filters['format_duration'] = format_duration
+
+
     return app
+
+
+
+def format_duration(seconds):
+    if seconds is None:
+        return '--:--'
+    minutes = seconds // 60
+    secs = seconds % 60
+    return f"{minutes}:{secs:02d}"
