@@ -24,7 +24,17 @@
   <main class="home-container">
     <section class="playlists-section">
       <div class="playlist-section-header">
-        <h2>My Playlists</h2>
+        <div class="playlist-view-tabs">
+          <a href="{{ url_for('main.account', view='my') }}"
+            class="tab-button {% if current_view == 'my' %}active{% endif %}">
+            My Playlists
+          </a>
+          <a href="{{ url_for('main.account', view='archived') }}"
+            class="tab-button {% if current_view == 'archived' %}active{% endif %}">
+            Archived
+          </a>
+        </div>
+
         <a href="#" class="btn btn-primary create-playlist-btn" title="Create New Playlist">
           <i class="fas fa-plus"></i>
         </a>
@@ -94,7 +104,13 @@
           </details>
         {% endfor %}
       {% else %}
-        <p>You haven't created any playlists yet.</p>
+        <p>
+          {% if current_view == 'archived' %}
+            You have no archived playlists.
+          {% else %}
+            You haven't created any playlists yet.
+          {% endif %}
+        </p>
       {% endif %}
     </section>
 

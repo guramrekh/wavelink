@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app
 from flask_login import login_user, current_user, logout_user, login_required 
 
-from myapp.models import User
+from myapp.models import Playlist, User
 from myapp.forms import RegistrationForm, LoginForm, AccountUpdateForm
 from myapp.extensions import db, bcrypt
 
@@ -107,10 +107,17 @@ def account():
         form.username.data = current_user.username
         form.bio.data = current_user.bio
 
+    view = request.args.get("view", "my")
+    playlists = []
+    if view == "my":
+        playlists = Playlist.query.filter_by(user_id=current_user.id, archived=False).all()
+    elif view == "archived":
+        playlists = Playlist.query.filter_by(user_id=current_user.id, archived=True).all()
+
     user_pfp = url_for('static', filename='pictures/' + current_user.profile_picture)
-    playlists=current_user.playlists
     total_duration_list = formatted_total_duration(playlists)
-    return render_template('account.html', playlists=playlists, form=form, user_pfp=user_pfp, total_durations=total_duration_list)
+    return render_template('account.html', playlists=playlists, form=form, user_pfp=user_pfp, 
+                           total_durations=total_duration_list, current_view=view)
 
 
 @bp.route('/logout')
