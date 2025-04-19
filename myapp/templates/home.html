@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - WaveLink</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
@@ -24,11 +24,22 @@
   <main class="home-container">
     <section class="playlists-section">
       <div class="playlist-section-header">
-        <h2>My Playlists</h2>
+        <div class="playlist-view-tabs">
+          <a href="{{ url_for('main.home', view='my') }}"
+            class="tab-button {% if current_view == 'my' %}active{% endif %}">
+            My Playlists
+          </a>
+          <a href="{{ url_for('main.home', view='archived') }}"
+            class="tab-button {% if current_view == 'archived' %}active{% endif %}">
+            Archived
+          </a>
+        </div>
+
         <!-- <a href="#" class="btn btn-primary create-playlist-btn" title="Create New Playlist">
           <i class="fas fa-plus"></i>
         </a> -->
       </div>
+
       {% if playlists %}
         {% for playlist in playlists %}
           <details class="playlist-item">
@@ -36,8 +47,9 @@
               <img src="{{ url_for('static', filename='pictures/default_cover.jpg') }}"
                 alt="{{ playlist.name }} cover" class="playlist-cover-thumb">
 
-              <div class="playlist-header-main">
-                <span class="playlist-name">{{ playlist.name }}</span>
+              <span class="playlist-name">{{ playlist.name }}</span>
+
+              <div class="playlist-header-right">
                 <div class="playlist-stats header-stats">
                   <span class="playlist-song-count" title="Number of songs">
                     {{ playlist.tracks.count() }} songs
@@ -47,9 +59,9 @@
                     {{ total_durations[loop.index0] }}
                   </span>
                 </div>
-              </div>
 
-              <i class="fas fa-chevron-down details-arrow"></i>
+                <i class="fas fa-chevron-down details-arrow"></i>
+              </div>
 
               <div class="playlist-info">
                 <p>{{ playlist.description or '' }}</p>

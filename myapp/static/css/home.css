@@ -72,7 +72,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     text-align: center;
-    height: fit-content; /* as tall as its content */
+    height: fit-content;
     position: sticky; 
     top: calc(2rem + 60px); 
 }
@@ -171,7 +171,6 @@ body {
 .playlist-item {
     margin-bottom: 0.75rem;
     border-radius: 5px;
-    overflow: hidden;
     border: 1px solid #dee2e6; 
 }
 
@@ -179,7 +178,7 @@ body {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 0.5rem 1rem;
+    gap: 1rem;
     background-color: var(--dark);
     color: var(--light);
     padding: 1rem 1.5rem;
@@ -188,16 +187,23 @@ body {
     font-weight: 500;
     list-style: none; 
     transition: background-color 0.2s ease;
-    position: relative; /* of the arrow */
+    position: relative;
     padding-bottom: 2.5rem;
+    /* overflow: hidden; */
 }
-
 .playlist-header:hover {
     background-color: #343a40;
 }
-
 .playlist-header::-webkit-details-marker {
     display: none;
+}
+
+.playlist-header-right {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    gap: 0.75rem;
+    flex-shrink: 0;
 }
 
 .playlist-cover-thumb {
@@ -210,18 +216,23 @@ body {
 }
 
 .playlist-name {
-    flex-grow: 0; /* Changed from 1 */
+    flex-shrink: 1;
     font-size: 1.5rem;
     margin-right: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    min-width: 50px;
 }
 
-.playlist-stats {
+.playlist-stats.header-stats {
     display: flex;
     align-items: center;
     gap: 2px;
     font-size: 0.85em;
     color: #777;
     margin-top: 5px;
+    flex-shrink: 0;
 }
 
 .playlist-stats span {
@@ -232,26 +243,8 @@ body {
 
 .playlist-stats .meta-separator {
     color: #aaa;
-    margin: 0 3px;        /* Horizontal space around separator */
+    margin: 0 3px;
     font-weight: bold;
-}
-
-.details-arrow {
-    margin-left: auto; 
-    font-size: 0.9em;
-    transition: transform 0.2s ease-in-out;
-    color: rgba(255, 255, 255, 0.7); 
-    align-self: center; 
-    padding-left: 0.5rem;
-}
-
-.playlist-item[open] > summary .details-arrow {
-    transform: rotate(180deg);
-}
-
-.playlist-item[open] > .playlist-header {
-   border-bottom-left-radius: 0;
-   border-bottom-right-radius: 0;
 }
 
 .playlist-meta {
@@ -264,6 +257,7 @@ body {
     font-weight: 400;
     color: #777;
     line-height: 1;
+    z-index: 5;
 }
 .meta-separator {
     margin-left: 0.35rem;
@@ -274,13 +268,94 @@ body {
     margin: 0;
 }
 
+.details-arrow {
+    font-size: 0.9em;
+    transition: transform 0.2s ease-in-out;
+    color: rgba(255, 255, 255, 0.7); 
+
+}
+
+.playlist-item[open] > summary .details-arrow {
+    transform: rotate(180deg);
+}
+
+.playlist-item[open] > .playlist-header {
+   border-bottom-left-radius: 0;
+   border-bottom-right-radius: 0;
+}
+
+.playlist-options {
+    position: relative;
+    z-index: 10; 
+}
+
+.options-button {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7); 
+    font-size: 1.1rem; 
+    padding: 5px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    line-height: 1;
+}
+
+.options-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.options-dropdown {
+    display: none;
+    position: absolute;
+    right: 0; 
+    top: 100%; 
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    min-width: 120px;
+    padding: 1px 0;
+    z-index: 11;
+}
+.options-dropdown.menu-open {
+    display: block;
+}
+.options-dropdown .dropdown-item {
+    display: block;
+    padding: 8px 15px;
+    color: var(--dark);
+    text-decoration: none;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+.options-dropdown .dropdown-item:hover {
+    background-color: #f0f0f0;
+}
+.options-dropdown .dropdown-form {
+    margin: 0;
+}
+.options-dropdown .delete-item {
+    color: #dc3545;
+}
+.options-dropdown .delete-item:hover {
+    background-color: #f8d7da;
+}
+
 
 .playlist-info {
-    width: 100%;   /* Force this block onto a new line */
+    flex-basis: 100%;
+    order: 1;
     font-size: 0.85em;
     font-weight: 450;
     color: rgba(255, 255, 255, 0.8); 
-    padding-left: calc(55px + 1rem); 
+    padding-left: 1.5rem; 
+    padding-right: 1.5rem;
     padding-top: 0.2rem; 
     padding-bottom: 0.5rem;
 }

@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='forms.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <title>Account - WaveLink</title>
 </head>
@@ -34,20 +34,22 @@
             Archived
           </a>
         </div>
-
         <a href="#" class="btn btn-primary create-playlist-btn" title="Create New Playlist">
           <i class="fas fa-plus"></i>
         </a>
       </div>
+
       {% if playlists %}
         {% for playlist in playlists %}
           <details class="playlist-item">
+
             <summary class="playlist-header">
               <img src="{{ url_for('static', filename='pictures/default_cover.jpg') }}"
                   alt="{{ playlist.name }} cover" class="playlist-cover-thumb">
 
-              <div class="playlist-header-main">
-                <span class="playlist-name">{{ playlist.name }}</span>
+              <span class="playlist-name">{{ playlist.name }}</span>
+
+              <div class="playlist-header-right">
                 <div class="playlist-stats header-stats">
                   <span class="playlist-song-count" title="Number of songs">
                     {{ playlist.tracks.count() }} songs
@@ -57,9 +59,34 @@
                     {{ total_durations[loop.index0] }}
                   </span>
                 </div>
-              </div>
 
-              <i class="fas fa-chevron-down details-arrow"></i>
+                <div class="playlist-options">
+                  <button class="options-button" aria-label="Playlist options" title="Options">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </button>
+                  <div class="options-dropdown">
+                    <a href="#" class="dropdown-item">Edit</a>
+
+                    <form action="{{ url_for('main.toggle_playlist_archive', playlist_id=playlist.id) }}" 
+                        method="POST" class="dropdown-form">
+                      <input type="hidden" name="origin_view" value="{{ current_view }}">
+                      <button type="submit" class="dropdown-item">
+                        {% if playlist.archived %}Unarchive{% else %}Archive{% endif %}
+                      </button>
+                    </form>
+
+                    <form action="{{ url_for('main.delete_playlist', playlist_id=playlist.id) }}" 
+                        method="POST" class="dropdown-form">
+                      <input type="hidden" name="origin_view" value="{{ current_view }}">
+                      <button type="submit" class="dropdown-item delete-item" onclick=
+                        "return confirm('Are you sure you want to delete this playlist?');">Delete
+                      </button>
+                    </form>
+                  </div>
+                </div>
+
+                <i class="fas fa-chevron-down details-arrow"></i>
+              </div>
 
               <div class="playlist-info">
                 <p>{{ playlist.description or '' }}</p>
@@ -178,6 +205,7 @@
 
   </main>
 
+  <script src="{{ url_for('static', filename='js/playlist_options_menu.js') }}"></script>
 </body>
 
 </html>

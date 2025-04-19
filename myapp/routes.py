@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app
+from flask import Blueprint, abort, render_template, flash, redirect, request, url_for, current_app
 from flask_login import login_user, current_user, logout_user, login_required 
 
 from myapp.models import Playlist, User
@@ -71,10 +71,17 @@ def formatted_total_duration(playlists):
 @bp.route('/home')
 @login_required
 def home():
+    view = request.args.get("view", "my")
+    playlists = []
+    if view == "my":
+        playlists = Playlist.query.filter_by(user_id=current_user.id, archived=False).all()
+    elif view == "archived":
+        playlists = Playlist.query.filter_by(user_id=current_user.id, archived=True).all()
+        
     user_pfp = url_for('static', filename='pictures/' + current_user.profile_picture)
-    playlists=current_user.playlists
     total_duration_list = formatted_total_duration(playlists)
-    return render_template('home.html', playlists=playlists, user_pfp=user_pfp, total_durations=total_duration_list)
+    return render_template('home.html', playlists=playlists, user_pfp=user_pfp, 
+                           total_durations=total_duration_list, current_view=view)
 
 
 def save_picture(form_picture):
@@ -126,3 +133,39 @@ def logout():
     return redirect(url_for('main.index'))
 
 
+@bp.route('/playlist/<int:playlist_id>/toggle_archive', methods=['POST'])
+@login_required
+def toggle_playlist_archive(playlist_id):
+    origin_view = request.form.get('origin_view', 'active')
+    playlist = Playlist.query.get_or_404(playlist_id)
+
+    if playlist.user_id != current_user.id:
+        abort(403)
+
+    try:
+        playlist.archived = not playlist.archived
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error toggling archive status for playlist {playlist_id}: {e}")
+    
+    return redirect(url_for('main.account', view=origin_view))
+
+
+@bp.route('/playlist/<int:playlist_id>/delete', methods=['POST'])
+@login_required
+def delete_playlist(playlist_id):
+    origin_view = request.form.get('origin_view', 'active')
+    playlist = Playlist.query.get_or_404(playlist_id)
+
+    if playlist.user_id != current_user.id:
+        abort(403)
+
+    try:
+        db.session.delete(playlist)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error deleting playlist {playlist_id}: {e}")
+    
+    return redirect(url_for('main.account', view=origin_view))
