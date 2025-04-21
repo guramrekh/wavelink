@@ -7,14 +7,28 @@
     border-radius: 8px;
 }
 
-.content-section legend {
-    font-size: 1.8rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
+.legend-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
     padding-bottom: 0.5rem;
     border-bottom: 2px solid var(--primary);
-    color: var(--dark);
     width: 100%;
+}
+
+.playlist-edit-cover {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 1.5rem;
+    flex-shrink: 0;
+}
+
+.legend-text {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--dark);
 }
 
 .content-section fieldset {
@@ -63,7 +77,7 @@ textarea.form-control {
 
 /* Buttons */
 fieldset + .form-group {
-    margin-top: 1rem;
+    /* margin-top: 1rem; */
     margin-bottom: 0;
     text-align: right;
 }

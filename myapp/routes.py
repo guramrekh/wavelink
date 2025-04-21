@@ -2,7 +2,7 @@ from flask import Blueprint, abort, render_template, flash, redirect, request, u
 from flask_login import login_user, current_user, logout_user, login_required 
 
 from myapp.models import Playlist, User
-from myapp.forms import PlaylistCreationForm, RegistrationForm, LoginForm, AccountUpdateForm
+from myapp.forms import PlaylistCreationForm, PlaylistUpdateForm, RegistrationForm, LoginForm, AccountUpdateForm
 from myapp.extensions import db, bcrypt
 
 import secrets 
@@ -85,6 +85,9 @@ def home():
 
 
 def save_picture(form_picture, subfolder):
+    if not form_picture:
+        return None
+    
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
@@ -94,8 +97,7 @@ def save_picture(form_picture, subfolder):
     elif subfolder == 'playlists':
         picture_path = os.path.join(current_app.root_path, 'static/pictures/playlists', picture_fn)
 
-
-    output_size = (120, 120)
+    output_size = (400, 400)
     image = Image.open(form_picture)
     image.thumbnail(output_size)
     image.save(picture_path)
@@ -108,7 +110,14 @@ def account():
     form = AccountUpdateForm()
     if form.validate_on_submit():
         if form.profile_picture.data:
+            pic_fn_to_delete = current_user.profile_picture
             current_user.profile_picture = save_picture(form.profile_picture.data, 'users')
+            if pic_fn_to_delete != 'default_pfp.jpg':
+                file_path = os.path.join(current_app.root_path, 'static/pictures/users', pic_fn_to_delete)
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                else:
+                    print(f"Cover file not found, skipping delete: {file_path}")
         current_user.username = form.username.data
         current_user.bio = form.bio.data
         db.session.commit()
@@ -140,7 +149,7 @@ def logout():
 @bp.route('/playlist/<int:playlist_id>/toggle_archive', methods=['POST'])
 @login_required
 def toggle_playlist_archive(playlist_id):
-    origin_view = request.form.get('origin_view', 'active')
+    origin_view = request.form.get('origin_view', 'my')
     playlist = Playlist.query.get_or_404(playlist_id)
 
     if playlist.author != current_user:
@@ -159,7 +168,7 @@ def toggle_playlist_archive(playlist_id):
 @bp.route('/playlist/<int:playlist_id>/delete', methods=['POST'])
 @login_required
 def delete_playlist(playlist_id):
-    origin_view = request.form.get('origin_view', 'active')
+    origin_view = request.form.get('origin_view', 'my')
     playlist = Playlist.query.get_or_404(playlist_id)
 
     if playlist.author != current_user:
@@ -181,6 +190,47 @@ def delete_playlist(playlist_id):
         print(f"Error deleting playlist {playlist_id}: {e}")
     
     return redirect(url_for('main.account', view=origin_view))
+
+
+@bp.route('/playlist/<int:playlist_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_playlist(playlist_id):
+    origin_view = request.args.get('origin_view')
+    playlist = Playlist.query.get_or_404(playlist_id)
+
+    if playlist.author != current_user:
+        abort(403)
+
+    form = PlaylistUpdateForm()
+    if form.validate_on_submit():
+        old_cover_fn = playlist.cover_photo
+        new_cover_fn = save_picture(form.cover_photo.data, 'playlists')
+
+        try:
+            playlist.name = form.name.data
+            playlist.description = form.description.data
+            playlist.visibility = form.visibility.data
+            if new_cover_fn:
+                playlist.cover_photo = new_cover_fn
+                if old_cover_fn != 'default_cover.jpg':
+                    old_cover_path = os.path.join(current_app.root_path, 'static/pictures/playlists', old_cover_fn)
+                    if os.path.exists(old_cover_path):
+                        os.remove(old_cover_path)
+            db.session.commit()
+            flash(f"Playlist '{playlist.name}' edited successfully!", 'success')
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error editing playlist: {e}")
+            flash('Error editing playlist.', 'danger')
+            return render_template('edit_playlist.html', form=form)
+
+        return redirect(url_for('main.account', view=origin_view))
+
+    form.name.data = playlist.name
+    form.description.data = playlist.description
+    form.visibility.data = playlist.visibility
+    cover = playlist.cover_photo
+    return render_template('edit_playlist.html', form=form, view=origin_view, cover=cover)
 
 
 @bp.route('/playlist/create', methods=['GET', 'POST'])
@@ -209,3 +259,5 @@ def create_playlist():
 
 
     return render_template('create_playlist.html', form=form)
+
+

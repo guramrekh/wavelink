@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/create_playlist.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <title>Create New Playlist - WaveLink</title>
+  <title>Edit Playlist - WaveLink</title>
 </head>
 
 <body>
@@ -29,8 +29,11 @@
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
           <div class="legend-container">
-            <legend class="legend-text">Create Playlist</legend> 
+            <img src="{{ url_for('static', filename='pictures/playlists/' + cover) }}" 
+              alt="Playlist Cover" class="playlist-edit-cover"> 
+          <legend class="legend-text">Update Playlist</legend> 
           </div>
+          
           {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
               {% for category, message in messages %}
@@ -44,7 +47,7 @@
           <div class="form-group">
               {{ form.name.label(class="form-control-label") }}
               {% if form.name.errors %}
-                {{ form.name(class="form-control  is-invalid") }}
+                {{ form.name(class="form-control is-invalid") }}
                 <div class="invalid-feedback">
                     {% for error in form.name.errors %}<span>{{ error }}</span>{% endfor %}
                 </div>
@@ -54,9 +57,9 @@
           </div>
 
             <div class="form-group">
-              {{ form.description.label(class="form-control-label") }} (Optional)
+              {{ form.description.label(class="form-control-label") }}
               {% if form.description.errors %}
-                {{ form.description(class="form-control  is-invalid", rows=3) }}
+                {{ form.description(class="form-control is-invalid", rows=3) }}
                 <div class="invalid-feedback">
                   {% for error in form.description.errors %}<span>{{ error }}</span>{% endfor %}
                 </div>
@@ -66,7 +69,7 @@
             </div>
 
             <div class="form-group">
-              {{ form.cover_photo.label(class="form-control-label") }} (Optional)
+              {{ form.cover_photo.label(class="form-control-label") }}
               {{ form.cover_photo(class="form-control-file") }}
               {% if form.cover_photo.errors %}
                 <div class="invalid-feedback d-block">
@@ -88,8 +91,8 @@
             </div>
         </fieldset>
         <div class="form-group">
-          {{ form.create(class="btn btn-primary") }}
-          <a href="{{ url_for('main.account') }}" class="btn btn-outline">Cancel</a>
+          {{ form.edit(class="btn btn-primary") }}
+          <a href="{{ url_for('main.account', view=view) }}" class="btn btn-outline">Cancel</a>
         </div>
       </form>
     </div>

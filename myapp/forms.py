@@ -49,6 +49,14 @@ class PlaylistCreationForm(FlaskForm):
     description = TextAreaField('Description', validators=[Optional(), Length(max=500)])
     cover_photo = FileField('Cover', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png'])])
     visibility = SelectField('Visibility', choices=[('public', 'Public'), ('private', 'Private')],
-                                        default='private',
-                                        validators=[DataRequired()])
+                                        default='private', validators=[DataRequired()])
     create = SubmitField('Create')
+
+
+class PlaylistUpdateForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired(), Length(min=1, max=32)])
+    description = TextAreaField('Description', validators=[Optional(), Length(max=500)])
+    cover_photo = FileField('Cover', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png'])])
+    visibility = SelectField('Visibility', choices=[('public', 'Public'), ('private', 'Private')],
+                                        default='private', validators=[DataRequired()])
+    edit = SubmitField('Edit')
