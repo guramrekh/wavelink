@@ -2,7 +2,7 @@ from flask import Blueprint, abort, render_template, flash, redirect, request, u
 from flask_login import login_user, current_user, logout_user, login_required 
 
 from myapp.models import Playlist, User
-from myapp.forms import RegistrationForm, LoginForm, AccountUpdateForm
+from myapp.forms import PlaylistCreationForm, RegistrationForm, LoginForm, AccountUpdateForm
 from myapp.extensions import db, bcrypt
 
 import secrets 
@@ -78,18 +78,22 @@ def home():
     elif view == "archived":
         playlists = Playlist.query.filter_by(user_id=current_user.id, archived=True).all()
         
-    user_pfp = url_for('static', filename='pictures/' + current_user.profile_picture)
+    user_pfp = url_for('static', filename='pictures/users/' + current_user.profile_picture)
     total_duration_list = formatted_total_duration(playlists)
     return render_template('home.html', playlists=playlists, user_pfp=user_pfp, 
                            total_durations=total_duration_list, current_view=view)
 
 
-def save_picture(form_picture):
+def save_picture(form_picture, subfolder):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
     
-    picture_path = os.path.join(current_app.root_path, 'static/pictures', picture_fn)
+    if subfolder == 'users':
+        picture_path = os.path.join(current_app.root_path, 'static/pictures/users', picture_fn)
+    elif subfolder == 'playlists':
+        picture_path = os.path.join(current_app.root_path, 'static/pictures/playlists', picture_fn)
+
 
     output_size = (120, 120)
     image = Image.open(form_picture)
@@ -104,7 +108,7 @@ def account():
     form = AccountUpdateForm()
     if form.validate_on_submit():
         if form.profile_picture.data:
-            current_user.profile_picture = save_picture(form.profile_picture.data)
+            current_user.profile_picture = save_picture(form.profile_picture.data, 'users')
         current_user.username = form.username.data
         current_user.bio = form.bio.data
         db.session.commit()
@@ -121,7 +125,7 @@ def account():
     elif view == "archived":
         playlists = Playlist.query.filter_by(user_id=current_user.id, archived=True).all()
 
-    user_pfp = url_for('static', filename='pictures/' + current_user.profile_picture)
+    user_pfp = url_for('static', filename='pictures/users/' + current_user.profile_picture)
     total_duration_list = formatted_total_duration(playlists)
     return render_template('account.html', playlists=playlists, form=form, user_pfp=user_pfp, 
                            total_durations=total_duration_list, current_view=view)
@@ -139,7 +143,7 @@ def toggle_playlist_archive(playlist_id):
     origin_view = request.form.get('origin_view', 'active')
     playlist = Playlist.query.get_or_404(playlist_id)
 
-    if playlist.user_id != current_user.id:
+    if playlist.author != current_user:
         abort(403)
 
     try:
@@ -158,8 +162,16 @@ def delete_playlist(playlist_id):
     origin_view = request.form.get('origin_view', 'active')
     playlist = Playlist.query.get_or_404(playlist_id)
 
-    if playlist.user_id != current_user.id:
+    if playlist.author != current_user:
         abort(403)
+
+    cover_fn_to_delete = playlist.cover_photo
+    if cover_fn_to_delete and cover_fn_to_delete != 'default_cover.jpg':
+        file_path = os.path.join(current_app.root_path, 'static/pictures/playlists', cover_fn_to_delete)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        else:
+            print(f"Cover file not found, skipping delete: {file_path}")
 
     try:
         db.session.delete(playlist)
@@ -169,3 +181,31 @@ def delete_playlist(playlist_id):
         print(f"Error deleting playlist {playlist_id}: {e}")
     
     return redirect(url_for('main.account', view=origin_view))
+
+
+@bp.route('/playlist/create', methods=['GET', 'POST'])
+@login_required
+def create_playlist():
+    form = PlaylistCreationForm()
+
+    if form.validate_on_submit():
+        cover_filename = None
+        if form.cover_photo.data:
+            cover_filename = save_picture(form.cover_photo.data, 'playlists')
+        playlist = Playlist(name=form.name.data, description=form.description.data,
+                            visibility=form.visibility.data, cover_photo=cover_filename,
+                            author=current_user)
+        try:
+            db.session.add(playlist)
+            db.session.commit()
+            flash(f"Playlist '{playlist.name}' created successfully!", 'success')
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error creating playlist: {e}")
+            flash('Error creating playlist.', 'danger')
+            return render_template('create_playlist.html', form=form)
+
+        return redirect(url_for('main.account'))
+
+
+    return render_template('create_playlist.html', form=form)

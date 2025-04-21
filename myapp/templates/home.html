@@ -34,17 +34,13 @@
             Archived
           </a>
         </div>
-
-        <!-- <a href="#" class="btn btn-primary create-playlist-btn" title="Create New Playlist">
-          <i class="fas fa-plus"></i>
-        </a> -->
       </div>
 
       {% if playlists %}
         {% for playlist in playlists %}
           <details class="playlist-item">
             <summary class="playlist-header">
-              <img src="{{ url_for('static', filename='pictures/default_cover.jpg') }}"
+              <img src="{{ url_for('static', filename='pictures/playlists/' + playlist.cover_photo) }}"
                 alt="{{ playlist.name }} cover" class="playlist-cover-thumb">
 
               <span class="playlist-name">{{ playlist.name }}</span>

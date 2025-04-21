@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms import SelectField, StringField, PasswordField, SubmitField, TextAreaField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, Optional, ValidationError
 
 from myapp.models import User
 
@@ -42,3 +42,13 @@ class AccountUpdateForm(FlaskForm):
             user = User.query.filter_by(username=username.data).first()
             if user:
                 raise ValidationError('That username is taken. Please choose a different one.')
+
+
+class PlaylistCreationForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired(), Length(min=1, max=32)])
+    description = TextAreaField('Description', validators=[Optional(), Length(max=500)])
+    cover_photo = FileField('Cover', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png'])])
+    visibility = SelectField('Visibility', choices=[('public', 'Public'), ('private', 'Private')],
+                                        default='private',
+                                        validators=[DataRequired()])
+    create = SubmitField('Create')

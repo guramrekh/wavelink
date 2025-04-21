@@ -1,0 +1,136 @@
+
+.content-section {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+}
+
+.content-section legend {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--primary);
+    color: var(--dark);
+    width: 100%;
+}
+
+.content-section fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 0.6rem 0.9rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.form-control-label {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+select.form-control {
+    width: fit-content;
+}
+
+textarea.form-control {
+    height: auto;
+}
+
+.form-control-file {
+    display: block;
+    width: 100%;
+}
+
+
+/* Buttons */
+fieldset + .form-group {
+    margin-top: 1rem;
+    margin-bottom: 0;
+    text-align: right;
+}
+.form-group:last-child .btn {
+    margin-left: 0.5rem;
+}
+
+
+.invalid-feedback {
+    display: none;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc3545;
+}
+
+.invalid-feedback span {
+    display: block;
+}
+
+.is-invalid ~ .invalid-feedback,
+.is-invalid ~ .invalid-feedback .d-block {
+    display: block;
+}
+
+.form-control.is-invalid,
+textarea.form-control.is-invalid,
+select.form-control.is-invalid {
+    border-color: #dc3545;
+}
+
+.form-control.is-invalid:focus,
+textarea.form-control.is-invalid:focus,
+select.form-control.is-invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+
+.alert {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+}
+
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+
+@media (max-width: 768px) {
+    .content-section {
+        margin: 1rem;
+        padding: 20px;
+        max-width: none;
+    }
+
+    .content-section legend.border-bottom {
+        font-size: 1.5rem;
+    }
+}
