@@ -76,6 +76,13 @@
                   {% for error in form.cover_photo.errors %}<span>{{ error }}</span>{% endfor %}
                 </div>
               {% endif %}
+
+              {% if cover and cover != 'default_cover.jpg' %}
+              <div class="form-check">
+                {{ form.restore_default_cover(class="form-check-input") }}
+                {{ form.restore_default_cover.label(class="form-check-label") }}
+              </div>
+              {% endif %}
             </div>
 
             <div class="form-group">

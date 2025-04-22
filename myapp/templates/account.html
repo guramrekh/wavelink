@@ -178,7 +178,7 @@
                 <small class="form-error">{{ error }}</small>
               {% endfor %}
             {% else %}
-              {{ form.bio(class="form-control") }}
+              {{ form.bio(class="form-control", rows=3) }}
             {% endif %}
           </div>
 
@@ -189,6 +189,13 @@
               {% for error in form.profile_picture.errors %}
                 <span class="text-danger">{{ error }}</span><br>
               {% endfor %}
+            {% endif %}
+
+            {% if current_user.profile_picture and current_user.profile_picture != 'default_pfp.jpg' %}
+            <div class="form-check">
+              {{ form.restore_default_picture(class="form-check-input") }}
+              {{ form.restore_default_picture.label(class="form-check-label") }}
+            </div>
             {% endif %}
           </div>
   

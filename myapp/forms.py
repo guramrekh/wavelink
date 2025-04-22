@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import SelectField, StringField, PasswordField, SubmitField, TextAreaField
+from wtforms import BooleanField, SelectField, StringField, PasswordField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, Optional, ValidationError
 
 from myapp.models import User
@@ -33,8 +33,10 @@ class LoginForm(FlaskForm):
 
 class AccountUpdateForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=4, max=32)])
-    bio = StringField('Bio')
-    profile_picture = FileField('Profile Picture', validators=[FileAllowed(['jpg', 'jpeg', 'png'])])            
+    bio = TextAreaField('Bio', validators=[Optional(), Length(max=300)])
+    profile_picture = FileField('Profile Picture', validators=[FileAllowed(['jpg', 'jpeg', 'png'])])
+    restore_default_picture = BooleanField('Restore default profile picture', default=False)
+            
     update = SubmitField('Update')
 
     def validate_username(self, username):
@@ -59,4 +61,5 @@ class PlaylistUpdateForm(FlaskForm):
     cover_photo = FileField('Cover', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png'])])
     visibility = SelectField('Visibility', choices=[('public', 'Public'), ('private', 'Private')],
                                         default='private', validators=[DataRequired()])
+    restore_default_cover = BooleanField('Restore default cover', default=False)
     edit = SubmitField('Edit')

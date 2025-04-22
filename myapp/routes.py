@@ -109,9 +109,11 @@ def save_picture(form_picture, subfolder):
 def account():
     form = AccountUpdateForm()
     if form.validate_on_submit():
-        if form.profile_picture.data:
-            pic_fn_to_delete = current_user.profile_picture
-            current_user.profile_picture = save_picture(form.profile_picture.data, 'users')
+        pic_fn_to_delete = current_user.profile_picture
+        new_pfp_fn = 'default_pfp.jpg' if form.restore_default_picture.data else save_picture(form.profile_picture.data, 'users')
+
+        if new_pfp_fn:
+            current_user.profile_picture = new_pfp_fn
             if pic_fn_to_delete != 'default_pfp.jpg':
                 file_path = os.path.join(current_app.root_path, 'static/pictures/users', pic_fn_to_delete)
                 if os.path.exists(file_path):
@@ -123,10 +125,9 @@ def account():
         db.session.commit()
         flash('Your account has been updated!', 'success')
         return redirect(url_for('main.account'))
-    elif request.method == 'GET':
-        form.username.data = current_user.username
-        form.bio.data = current_user.bio
-
+    
+    form.username.data = current_user.username
+    form.bio.data = current_user.bio
     view = request.args.get("view", "my")
     playlists = []
     if view == "my":
@@ -204,7 +205,7 @@ def edit_playlist(playlist_id):
     form = PlaylistUpdateForm()
     if form.validate_on_submit():
         old_cover_fn = playlist.cover_photo
-        new_cover_fn = save_picture(form.cover_photo.data, 'playlists')
+        new_cover_fn = 'default_cover.jpg' if form.restore_default_cover.data else save_picture(form.cover_photo.data, 'playlists')
 
         try:
             playlist.name = form.name.data
