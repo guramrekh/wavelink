@@ -1,3 +1,4 @@
+from datetime import timedelta
 import os
 
 from flask import Flask
@@ -30,10 +31,10 @@ def create_app(test_config=None):
 
     login_manager.login_view = 'main.login' 
     login_manager.login_message_category = 'info'
+    app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)
 
 
     app.jinja_env.filters['format_duration'] = format_duration
-
 
     return app
 
