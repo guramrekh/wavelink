@@ -67,14 +67,19 @@
                   </button>
                   <div class="options-dropdown">
                     <a href="{{ url_for('main.edit_playlist', playlist_id=playlist.id, origin_view=current_view) }}" 
-                      class="dropdown-item"> Edit
+                      class="dropdown-item"> 
+                      <i class="fas fa-pencil-alt" aria-hidden="true"></i>Edit
                     </a>
 
                     <form action="{{ url_for('main.toggle_playlist_archive', playlist_id=playlist.id) }}" 
                         method="POST" class="dropdown-form">
                       <input type="hidden" name="origin_view" value="{{ current_view }}">
                       <button type="submit" class="dropdown-item">
-                        {% if playlist.archived %}Unarchive{% else %}Archive{% endif %}
+                        {% if playlist.archived %}
+                          <i class="fas fa-box-open" aria-hidden="true"></i>Unarchive 
+                        {% else %}
+                          <i class="fas fa-archive" aria-hidden="true"></i>Archive 
+                        {% endif %}                      
                       </button>
                     </form>
 
@@ -85,9 +90,9 @@
                     </form>
 
                     <button type="button" class="dropdown-item delete-item"
-                      data-form-id="delete-form-{{ playlist.id }}"> Delete
+                      data-form-id="delete-form-{{ playlist.id }}"> 
+                      <i class="fas fa-trash-alt" aria-hidden="true"></i>Delete
                     </button>
-
                   </div>
                 </div>
 

@@ -346,6 +346,11 @@ body {
 .options-dropdown .delete-item:hover {
     background-color: #f8d7da;
 }
+.dropdown-item > i.fas {
+    margin-right: 0.5em;
+    width: 1.2em;
+    text-align: center;
+}
 
 
 .playlist-info {
