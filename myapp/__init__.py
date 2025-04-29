@@ -1,14 +1,19 @@
-from datetime import timedelta
 import os
-
+from dotenv import load_dotenv
+from datetime import timedelta
 from flask import Flask
 
+
+load_dotenv()
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        SECRET_KEY='dev',
-        SQLALCHEMY_DATABASE_URI='sqlite:///' + os.path.join(app.instance_path, 'myapp.sqlite')
+        SECRET_KEY=os.getenv('SECRET_KEY'),
+        SQLALCHEMY_DATABASE_URI='sqlite:///' + os.path.join(app.instance_path, 'myapp.sqlite'),
+
+        SPOTIFY_CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID'),
+        SPOTIFY_CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
     )
 
     if test_config is None:

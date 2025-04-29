@@ -1,12 +1,15 @@
-from flask import Blueprint, abort, render_template, flash, redirect, request, url_for, current_app
-from flask_login import login_user, current_user, logout_user, login_required 
+from flask import Blueprint, abort, jsonify, render_template, flash, redirect, request, url_for, current_app, session
+from flask_login import login_user, current_user, logout_user, login_required
 
-from myapp.models import Playlist, User
+from myapp.models import Playlist, User, Track, PlaylistTrack
 from myapp.forms import PlaylistCreationForm, PlaylistUpdateForm, RegistrationForm, LoginForm, AccountUpdateForm
 from myapp.extensions import db, bcrypt
 
-import secrets 
 import os 
+import secrets 
+import base64
+import requests 
+import time
 from PIL import Image
 
 
@@ -232,6 +235,76 @@ def edit_playlist(playlist_id):
     return render_template('edit_playlist.html', form=form, view=origin_view, cover=cover)
 
 
+@bp.route('/playlist/<int:playlist_id>/add_track', methods=['POST'])
+@login_required
+def add_track_to_playlist(playlist_id):
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+            
+        track_data = data.get('track')
+        
+        if not track_data:
+            return jsonify({"error": "Track data is required"}), 400
+            
+        playlist = Playlist.query.get(playlist_id)
+        if not playlist or playlist.author != current_user:
+            return jsonify({"error": "Playlist not found or access denied"}), 403
+            
+        track = Track.query.filter_by(external_id=track_data.get('spotify_id')).first()
+        
+        if not track:
+            track = Track(
+                external_id=track_data.get('spotify_id'),
+                title=track_data.get('name'),
+                artist=track_data.get('artists'),
+                album=track_data.get('album'),
+                duration=track_data.get('duration_sec')
+            )
+            db.session.add(track)
+            db.session.flush()
+            
+        existing_playlist_track = PlaylistTrack.query.filter_by(
+            playlist_id=playlist_id,
+            track_id=track.id
+        ).first()
+        
+        if existing_playlist_track:
+            return jsonify({"message": "Track already in playlist", "success": True}), 200
+            
+        # Get the next order number
+        # max_order = db.session.query(db.func.max(PlaylistTrack.order)).filter_by(playlist_id=playlist_id).scalar()
+        # next_order = (max_order or 0) + 1
+        
+        playlist_track = PlaylistTrack(
+            playlist_id=playlist_id,
+            track_id=track.id,
+            # order=next_order
+        )
+        
+        db.session.add(playlist_track)
+        db.session.commit()
+        
+        return jsonify({
+            "message": "Track added to playlist successfully",
+            "success": True,
+            "track": {
+                "id": track.id,
+                "title": track.title,
+                "artist": track.artist,
+                "album": track.album,
+                "duration": track.duration
+            }
+        }), 201
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error adding track to playlist: {e}")
+        return jsonify({"error": "An error occurred while adding the track to the playlist"}), 500
+
+
+
 @bp.route('/playlist/create', methods=['GET', 'POST'])
 @login_required
 def create_playlist():
@@ -256,7 +329,106 @@ def create_playlist():
 
         return redirect(url_for('main.account'))
 
-
     return render_template('create_playlist.html', form=form)
+
+
+@bp.route('/search_song', methods=['GET'])
+def search_song():
+    url = 'https://api.spotify.com/v1/search'
+
+    song_title = request.args.get('title')
+    song_artist = request.args.get('artist')
+
+    if not song_title or not song_artist:
+        return jsonify({"error": "Specify both title and artist"}), 400
+
+    access_token = get_spotify_token()
+    if not access_token:
+        return jsonify({"error": "Could not authenticate with Spotify"}), 500
+
+
+    query = f'track:"{song_title}" artist:"{song_artist}"'
+    headers = {'Authorization': 'Bearer ' + access_token}
+    params = {
+        'q': query,
+        'type': 'track',
+        'limit': 15
+    }
+
+    try:
+        response = requests.get(url, headers=headers, params=params)
+        response.raise_for_status()
+        search_results = response.json()
+
+        tracks_data = []
+        if search_results.get('tracks') and search_results['tracks'].get('items'):
+            for item in search_results['tracks']['items']:
+                track_info = {
+                    'spotify_id': item.get('id'),
+                    'name': item.get('name'),
+                    'artists': ', '.join([artist.get('name') for artist in item.get('artists', [])]),
+                    'album': item.get('album', {}).get('name'),
+                    'image_url': item.get('album', {}).get('images', [{}])[0].get('url') if item.get('album', {}).get('images') else None,
+                    'duration_sec': item.get('duration_ms') // 1000
+                }
+                tracks_data.append(track_info)
+
+        return jsonify(tracks_data)
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error searching Spotify: {e}")
+        if response.status_code == 401:
+            session.pop('spotify_access_token', None)
+            session.pop('spotify_token_expires', None)
+            return jsonify({"error": "Spotify authorization failed (token might have expired). Please try again."}), 401
+        return jsonify({"error": f"Error searching Spotify: {e}"}), 500
+    except Exception as e:
+         print(f"An unexpected error occurred during Spotify search: {e}")
+         return jsonify({"error": "An internal error occurred"}), 500
+
+
+
+def get_spotify_token():
+    if 'spotify_access_token' in session and 'spotify_token_expires' in session:
+        if time.time() < session['spotify_token_expires']:
+            return session['spotify_access_token']
+
+    client_id = current_app.config.get('SPOTIFY_CLIENT_ID')
+    client_secret = current_app.config.get('SPOTIFY_CLIENT_SECRET')
+
+    print(client_id)
+    print(client_secret)
+
+    if not client_id or not client_secret:
+        print("Error: Spotify Client ID or Secret not configured.") # for debugging
+        return None
+
+
+    auth_string = f"{client_id}:{client_secret}"
+    auth_bytes = auth_string.encode('utf-8')
+    auth_base64 = str(base64.b64encode(auth_bytes), 'utf-8')
+
+    url = 'https://accounts.spotify.com/api/token'
+    headers = {
+        'Authorization': 'Basic ' + auth_base64,
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    data = {'grant_type': 'client_credentials'}
+
+    try:
+        response = requests.post(url, headers=headers, data=data)
+        response.raise_for_status()
+        token_info = response.json()
+
+        session['spotify_access_token'] = token_info['access_token']
+        session['spotify_token_expires'] = time.time() + token_info['expires_in'] - 60
+        print("Obtained new Spotify token.") # For debugging
+        return token_info['access_token']
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error getting Spotify token: {e}")
+        session.pop('spotify_access_token', None)
+        session.pop('spotify_token_expires', None)
+        return None
 
 

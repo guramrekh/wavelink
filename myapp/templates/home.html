@@ -102,7 +102,13 @@
           </details>
         {% endfor %}
       {% else %}
-        <p>You haven't created any playlists yet.</p>
+      <p>
+        {% if current_view == 'archived' %}
+          You have no archived playlists.
+        {% else %}
+          You haven't created any playlists yet.
+        {% endif %}
+      </p>
       {% endif %}
     </section>
 
