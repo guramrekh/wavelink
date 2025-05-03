@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, session
+from flask import Blueprint, flash, redirect, request, session, url_for
 import requests
 
 from myapp.routes.utils import get_spotify_token
@@ -14,12 +14,13 @@ def search_song():
     song_artist = request.args.get('artist')
 
     if not song_title or not song_artist:
-        return jsonify({"error": "Specify both title and artist"}), 400
+        flash('Please specify both title and artist', 'warning')
+        return redirect(url_for('main.account'))
 
     access_token = get_spotify_token()
     if not access_token:
-        return jsonify({"error": "Could not authenticate with Spotify"}), 500
-
+        flash('Could not authenticate with Spotify. Please try again.', 'danger')
+        return redirect(url_for('main.account'))
 
     query = f'track:"{song_title}" artist:"{song_artist}"'
     headers = {'Authorization': 'Bearer ' + access_token}
@@ -47,17 +48,24 @@ def search_song():
                 }
                 tracks_data.append(track_info)
 
-        return jsonify(tracks_data)
+        if not tracks_data:
+            flash('No tracks found matching your search criteria', 'info')
+            return redirect(url_for('main.account'))
+
+        return tracks_data
 
     except requests.exceptions.RequestException as e:
         print(f"Error searching Spotify: {e}")
         if response.status_code == 401:
             session.pop('spotify_access_token', None)
             session.pop('spotify_token_expires', None)
-            return jsonify({"error": "Spotify authorization failed (token might have expired). Please try again."}), 401
-        return jsonify({"error": f"Error searching Spotify: {e}"}), 500
+            flash('Spotify authorization failed (token might have expired). Please try again.', 'danger')
+            return redirect(url_for('main.account'))
+        flash(f'Error searching Spotify: {str(e)}', 'danger')
+        return redirect(url_for('main.account'))
     except Exception as e:
-         print(f"An unexpected error occurred during Spotify search: {e}")
-         return jsonify({"error": "An internal error occurred"}), 500
+        print(f"An unexpected error occurred during Spotify search: {e}")
+        flash('An internal error occurred while searching', 'danger')
+        return redirect(url_for('main.account'))
 
 

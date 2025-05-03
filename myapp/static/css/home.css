@@ -397,6 +397,9 @@ body {
     font-size: 0.85em;
     letter-spacing: 0.05em;
     align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 .track-list-header .header-album {
     text-align: center; 
@@ -413,6 +416,22 @@ body {
     list-style: none; 
     padding: 0;
     margin: 0;
+    max-height: 575px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #adb5bd #f8f9fa;
+}
+.track-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.track-list::-webkit-scrollbar-track {
+    background: #f8f9fa;
+}
+
+.track-list::-webkit-scrollbar-thumb {
+    background-color: #adb5bd;
+    border-radius: 3px;
 }
 
 .track-item {

@@ -13,21 +13,24 @@
 </head>
 
 <body>
-  <div class="container">
+  <div class="flash-messages">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
-          <div class="alert alert-{{ category }} text-center" role="alert">
+          <div class="alert alert-{{ category }} alert-dismissible fade show custom-alert" role="alert">
             {{ message }}
           </div>
         {% endfor %}
       {% endif %}
     {% endwith %}
+  </div>
+
+  <div class="container">
     <div class="logo">
-      <h1 class="logo-text">Create an account</h1>
+        <h1 class="logo-text">Create an account</h1>
     </div>
     <form method="POST" action="" novalidate>
-      {{ form.hidden_tag() }}
+        {{ form.hidden_tag() }}
 
       <div class="form-group">
         {{ form.username.label }}
@@ -94,6 +97,18 @@
       320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
     </path>
   </svg>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script>
+      // Auto-dismiss flash messages after 3 seconds
+      $(document).ready(function() {
+          setTimeout(function() {
+              $('.custom-alert').alert('close');
+          }, 3000);
+      });
+  </script>
 </body>
 
 </html>

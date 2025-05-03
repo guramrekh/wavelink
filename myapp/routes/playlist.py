@@ -160,9 +160,11 @@ def add_track_to_playlist(playlist_id):
         ).first()
         
         if existing_playlist_track:
-            return jsonify({"message": "Track already in playlist", "success": True}), 200
-            
-        
+            return jsonify({
+                "message": "Track already in playlist",
+                "success": True
+            }), 200 
+
         playlist_track = PlaylistTrack(
             playlist_id=playlist_id,
             track_id=track.id,
@@ -172,7 +174,7 @@ def add_track_to_playlist(playlist_id):
         db.session.commit()
         
         return jsonify({
-            "message": "Track added to playlist successfully",
+            "message": "Track added successfully",
             "success": True,
             "track": {
                 "id": track.id,
