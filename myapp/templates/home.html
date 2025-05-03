@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap">
 </head>
 
 <body>
@@ -102,7 +103,7 @@
           </details>
         {% endfor %}
       {% else %}
-      <p>
+      <p class="no-playlists">
         {% if current_view == 'archived' %}
           You have no archived playlists.
         {% else %}

@@ -273,14 +273,10 @@ def add_track_to_playlist(playlist_id):
         if existing_playlist_track:
             return jsonify({"message": "Track already in playlist", "success": True}), 200
             
-        # Get the next order number
-        # max_order = db.session.query(db.func.max(PlaylistTrack.order)).filter_by(playlist_id=playlist_id).scalar()
-        # next_order = (max_order or 0) + 1
         
         playlist_track = PlaylistTrack(
             playlist_id=playlist_id,
             track_id=track.id,
-            # order=next_order
         )
         
         db.session.add(playlist_track)
@@ -302,6 +298,46 @@ def add_track_to_playlist(playlist_id):
         db.session.rollback()
         print(f"Error adding track to playlist: {e}")
         return jsonify({"error": "An error occurred while adding the track to the playlist"}), 500
+
+
+
+@bp.route('/playlist/<int:playlist_id>/remove_track', methods=['POST'])
+@login_required
+def remove_track_from_playlist(playlist_id):
+    try:
+        playlist_track_id = request.form.get('playlist_track_id')
+        origin_view = request.args.get('origin_view', 'my')
+        if not playlist_track_id:
+            flash('Track ID is required', 'danger')
+            return redirect(url_for('main.account', view=origin_view))
+            
+        playlist = Playlist.query.get_or_404(playlist_id)
+        if playlist.author != current_user:
+            abort(403)
+            
+        playlist_track = PlaylistTrack.query.filter_by(
+            id=playlist_track_id,
+            playlist_id=playlist_id
+        ).first_or_404()
+        
+        track = playlist_track.track
+        
+        db.session.delete(playlist_track)
+        
+        remaining_references = PlaylistTrack.query.filter_by(track_id=track.id).count()
+        
+        if remaining_references == 0:
+            db.session.delete(track)
+            
+        db.session.commit()
+        flash('Track removed successfully', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error removing track from playlist: {e}")
+        flash('Failed to remove track', 'danger')
+    
+    return redirect(url_for('main.account', view=origin_view))
 
 
 

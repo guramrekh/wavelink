@@ -129,6 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const button = e.target.closest('.add-to-playlist-btn');
       const resultItem = button.closest('.search-result-item');
       const playlistId = document.querySelector('.song-search-form').dataset.playlistId;
+      const playlistItem = document.querySelector(`.playlist-item[data-playlist-id="${playlistId}"]`);
       
       // Get the original track data
       const track = JSON.parse(resultItem.dataset.trackData);
@@ -150,7 +151,64 @@ document.addEventListener('DOMContentLoaded', function() {
         if (response.ok) {
           // Show success message
           alert(data.message || 'Track added successfully!');
-          // Optionally close the modal
+          
+          // Update the playlist content
+          if (data.track) {
+            const existingTrackList = playlistItem.querySelector('.track-list');
+            const noTracksMessage = playlistItem.querySelector('.no-tracks');
+            
+            if (noTracksMessage) {
+              noTracksMessage.remove();
+            }
+            
+            if (!existingTrackList) {
+              // Create track list if it doesn't exist
+              const playlistContent = playlistItem.querySelector('.playlist-content');
+              const trackListHeader = document.createElement('div');
+              trackListHeader.className = 'track-list-header';
+              trackListHeader.innerHTML = `
+                <span class="header-number">#</span>
+                <span class="header-title">Title</span>
+                <span class="header-album">Album</span>
+                <span class="header-duration"><i class="far fa-clock"></i></span>
+                <span class="header-delete">&nbsp;</span>
+              `;
+              const newTrackList = document.createElement('ol');
+              newTrackList.className = 'track-list';
+              playlistContent.insertBefore(trackListHeader, playlistContent.firstChild);
+              playlistContent.insertBefore(newTrackList, trackListHeader.nextSibling);
+            }
+            
+            const trackListElement = playlistItem.querySelector('.track-list');
+            const trackCount = trackListElement.children.length;
+            const newTrackItem = document.createElement('li');
+            newTrackItem.className = 'track-item';
+            newTrackItem.innerHTML = `
+              <span class="track-number">${trackCount + 1}</span>
+              <div class="track-details">
+                <span class="track-title">${data.track.title}</span>
+                <span class="track-artist">${data.track.artist}</span>
+              </div>
+              <span class="track-album">${data.track.album || 'Unknown'}</span>
+              <span class="track-duration">${formatDuration(data.track.duration)}</span>
+              <form action="/playlist/${playlistId}/remove_track" method="POST" class="delete-track-form">
+                <input type="hidden" name="playlist_track_id" value="${data.track.id}">
+                <button type="submit" class="btn btn-danger btn-sm" title="Delete track">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </form>
+            `;
+            trackListElement.appendChild(newTrackItem);
+            
+            // Update the song count in the playlist header
+            const songCountElement = playlistItem.querySelector('.playlist-song-count');
+            if (songCountElement) {
+              const currentCount = parseInt(songCountElement.textContent);
+              songCountElement.textContent = `${currentCount + 1} songs`;
+            }
+          }
+          
+          // Close the modal
           hideModal();
         } else {
           // Show error message

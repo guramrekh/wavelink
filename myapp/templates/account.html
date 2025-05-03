@@ -9,7 +9,13 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap">
   <title>Account - WaveLink</title>
+  <style>
+    .track-list-header {
+      grid-template-columns: 2em minmax(0, 1.8fr) minmax(0, 3fr) 4em 1em;
+    }
+  </style>
 </head>
 
 <body>
@@ -42,7 +48,7 @@
 
       {% if playlists %}
         {% for playlist in playlists %}
-          <details class="playlist-item">
+          <details class="playlist-item" open data-playlist-id="{{ playlist.id }}">
 
             <summary class="playlist-header">
               <img src="{{ url_for('static', filename='pictures/playlists/' + playlist.cover_photo) }}"
@@ -88,7 +94,6 @@
                       method="POST" class="dropdown-form">
                       <input type="hidden" name="origin_view" value="{{ current_view }}">
                     </form>
-
                     <button type="button" class="dropdown-item delete-item"
                       data-form-id="delete-form-{{ playlist.id }}"> 
                       <i class="fas fa-trash-alt" aria-hidden="true"></i>Delete
@@ -119,6 +124,7 @@
                   <span class="header-title">Title</span>
                   <span class="header-album">Album</span>
                   <span class="header-duration"><i class="far fa-clock"></i></span>
+                  <span class="header-delete">&nbsp;</span>
                 </div>
                 <ol class="track-list">
                   {% for playlist_track in playlist.tracks %}
@@ -130,6 +136,12 @@
                       </div>
                       <span class="track-album">{{ playlist_track.track.album or 'Unknown' }}</span>
                       <span class="track-duration">{{ playlist_track.track.duration|format_duration }}</span>
+                      <form action="{{ url_for('main.remove_track_from_playlist', playlist_id=playlist.id, origin_view=current_view) }}" method="POST" class="delete-track-form">
+                        <input type="hidden" name="playlist_track_id" value="{{ playlist_track.id }}">
+                        <button type="submit" class="btn btn-danger btn-sm" title="Delete track">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
+                      </form>
                     </li>
                   {% else %}
                     <li class="no-tracks">No tracks in this playlist yet.</li>
@@ -160,7 +172,7 @@
           </details>
         {% endfor %}
       {% else %}
-        <p>
+        <p class="no-playlists">
           {% if current_view == 'archived' %}
             You have no archived playlists.
           {% else %}
@@ -174,7 +186,6 @@
       <img src="{{ user_pfp }}" alt="Profile Picture" class="profile-pic">
       <h3>{{ current_user.username }}</h3>
       <p class="user-bio">{{ current_user.email }}</p>
-      <p class="user-bio">{{ current_user.bio or 'No bio provided.' }}</p>
       <hr class="info-divider">
   
       <div class="user-update-form">
@@ -241,19 +252,18 @@
     </div>
   </div>  
 
-  <!-- Search Results Modal -->
+
   <div id="search-results-modal" class="modal-overlay" style="display: none;">
     <div class="modal-box search-results-modal">
       <div class="modal-header">
+        <!-- <h2>Search Results</h2> -->
         <h3>Search Results</h3>
         <button class="close-modal" aria-label="Close modal">
           <i class="fas fa-times"></i>
         </button>
       </div>
       <div class="modal-content">
-        <div id="search-results-container">
-          <!-- Results will be populated here -->
-        </div>
+        <div id="search-results-container"></div>
         <div id="search-loading" class="loading-spinner" style="display: none;">
           <i class="fas fa-spinner fa-spin"></i> Searching...
         </div>

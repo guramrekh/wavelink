@@ -1,4 +1,3 @@
-
 :root {
     --primary: #4361ee;
     --secondary: #3a0ca3;
@@ -390,19 +389,24 @@ body {
 .track-list-header {
     display: grid;
     grid-template-columns: 2em minmax(0, 2fr) minmax(0, 3.5fr) 4em; 
+    /* grid-template-columns: 2em minmax(0, 1.8fr) minmax(0, 3fr) 4em 2.5em; */
     gap: 1rem;
     padding: 0.5rem 1.5rem;
     border-bottom: 1px solid #dee2e6;
     color: #6c757d;
     font-size: 0.85em;
     letter-spacing: 0.05em;
+    align-items: center;
 }
 .track-list-header .header-album {
     text-align: center; 
 }
 .track-list-header .header-duration {
-    text-align: right;
-    margin-right: 8px;
+    text-align: center;
+}
+
+.track-list-header::after {
+    content: "";
 }
 
 .track-list {
@@ -413,7 +417,8 @@ body {
 
 .track-item {
     display: grid; 
-    grid-template-columns: 2em minmax(0, 2fr) minmax(0, 3.5fr) 4em; 
+    /* grid-template-columns: 2em minmax(0, 2fr) minmax(0, 3.5fr) 4em;  */
+    grid-template-columns: 2em minmax(0, 1.8fr) minmax(0, 3fr) 4em auto;
     gap: 1rem; 
     align-items: center; 
     padding: 0.8rem 1.5rem;
@@ -448,7 +453,7 @@ body {
     font-size: 0.95rem; 
     white-space: nowrap; 
     overflow: hidden; 
-    text-overflow: ellipsis; /* ... for overflow */
+    text-overflow: ellipsis;
 }
 
 .track-artist {
@@ -476,6 +481,16 @@ body {
     white-space: nowrap;
 }
 
+.delete-track-form {
+    justify-self: end;
+}
+
+.delete-track-form .btn-sm {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+    line-height: 1.2;
+}
+
 .no-tracks {
     padding: 1rem 1.5rem;
     color: #6c757d;
@@ -489,7 +504,22 @@ body {
     text-align: center;
 }
 
-
+.playlists-section .no-playlists {
+    padding: 2.5rem;
+    color: #6c757d;
+    font-style: italic;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2rem;
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    letter-spacing: -0.3px;
+    line-height: 1.5;
+    display: block;
+    width: calc(100% - 2rem);
+}
 
 @media (max-width: 992px) {
     .profile-container {
