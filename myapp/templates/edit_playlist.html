@@ -18,7 +18,7 @@
       <a href="{{ url_for('main.home') }}" class="nav-logo">WaveLink</a>
       <div class="nav-links">
         <a href="{{ url_for('main.account') }}">Account</a>
-        <a href="{{ url_for('main.logout') }}">Logout</a>
+        <a href="{{ url_for('auth.logout') }}">Logout</a>
       </div>
     </div>
   </nav>
@@ -31,7 +31,7 @@
           <div class="legend-container">
             <img src="{{ url_for('static', filename='pictures/playlists/' + cover) }}" 
               alt="Playlist Cover" class="playlist-edit-cover"> 
-          <legend class="legend-text">Update Playlist</legend> 
+          <legend class="legend-text">Edit Playlist</legend> 
           </div>
           
           {% with messages = get_flashed_messages(with_categories=true) %}

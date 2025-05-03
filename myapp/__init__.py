@@ -3,8 +3,15 @@ from dotenv import load_dotenv
 from datetime import timedelta
 from flask import Flask
 
-
 load_dotenv()
+
+def format_duration(seconds):
+    if seconds is None:
+        return '--:--'
+    minutes = seconds // 60
+    secs = seconds % 60
+    return f"{minutes}:{secs:02d}"
+
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -26,15 +33,19 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    from . import routes 
-    app.register_blueprint(routes.bp)  
+    from myapp.routes import main, auth, playlist, spotify 
+    app.register_blueprint(main.main)
+    app.register_blueprint(auth.auth)
+    app.register_blueprint(playlist.playlist)
+    app.register_blueprint(spotify.spotify)
+
 
     from myapp.extensions import db, bcrypt, login_manager
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
 
-    login_manager.login_view = 'main.login' 
+    login_manager.login_view = 'auth.login' 
     login_manager.login_message_category = 'info'
     app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)
 
@@ -42,12 +53,3 @@ def create_app(test_config=None):
     app.jinja_env.filters['format_duration'] = format_duration
 
     return app
-
-
-
-def format_duration(seconds):
-    if seconds is None:
-        return '--:--'
-    minutes = seconds // 60
-    secs = seconds % 60
-    return f"{minutes}:{secs:02d}"
