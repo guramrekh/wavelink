@@ -540,6 +540,14 @@ body {
     width: calc(100% - 2rem);
 }
 
+.create-playlist-container {
+    margin-top: 1.5rem;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+}
+
+
 @media (max-width: 992px) {
     .profile-container {
         grid-template-columns: 2fr 1fr; 

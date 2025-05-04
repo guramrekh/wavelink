@@ -2,7 +2,7 @@ services:
   db:
     image: postgres:16
     container_name: my_postgres
-    restart: always
+    restart: no
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -15,7 +15,7 @@ services:
   web:
     build: .
     container_name: flask_app
-    restart: always
+    restart: no
     ports:
       - "5000:5000"
     environment:
