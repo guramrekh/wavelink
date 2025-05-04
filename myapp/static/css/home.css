@@ -552,8 +552,8 @@ body {
     }
 
     .user-info-section {
-        position: static;       /* Remove sticky positioning on mobile */
-        margin-bottom: 2rem;    /* Add space below user info when stacked */
+        position: static;
+        margin-bottom: 2rem;
     }
     .nav-container {
         padding: 0 1rem; 
@@ -595,11 +595,11 @@ body {
 
 @media (max-width: 768px) {
     .track-item {
-        grid-template-columns: 2em minmax(0, 1fr) 4em; /* hide album on small screens */
+        grid-template-columns: 2em minmax(0, 1fr) 4em;
         gap: 0.75rem;
     }
     .track-album {
-        display: none; /* Hide album column */
+        display: none;
     }
     .track-list-header {
         grid-template-columns: 2em minmax(0, 1fr) 4em;

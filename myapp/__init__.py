@@ -3,6 +3,9 @@ from dotenv import load_dotenv
 from datetime import timedelta
 from flask import Flask
 
+from myapp.config import DevelopmentConfig, ProductionConfig
+
+
 load_dotenv()
 
 def format_duration(seconds):
@@ -13,25 +16,18 @@ def format_duration(seconds):
     return f"{minutes}:{secs:02d}"
 
 
-def create_app(test_config=None):
+def create_app():
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY=os.getenv('SECRET_KEY'),
-        SQLALCHEMY_DATABASE_URI='sqlite:///' + os.path.join(app.instance_path, 'myapp.sqlite'),
 
-        SPOTIFY_CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID'),
-        SPOTIFY_CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
-    )
-
-    if test_config is None:
-        app.config.from_pyfile('config.py', silent=True)
+    env = os.getenv('FLASK_ENV', 'development')
+    
+    if env == 'production':
+        app.config.from_object(ProductionConfig)
     else:
-        app.config.from_mapping(test_config)
+        app.config.from_object(DevelopmentConfig)
 
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
+
+    os.makedirs(app.instance_path, exist_ok=True)
 
     from myapp.routes import main, auth, playlist, spotify 
     app.register_blueprint(main.main)
@@ -40,15 +36,16 @@ def create_app(test_config=None):
     app.register_blueprint(spotify.spotify)
 
 
-    from myapp.extensions import db, bcrypt, login_manager
-    db.init_app(app)
+    from myapp.extensions import db, migrate, bcrypt, login_manager
     bcrypt.init_app(app)
     login_manager.init_app(app)
+    db.init_app(app)
+    migrate.init_app(app, db) 
+
 
     login_manager.login_view = 'auth.login' 
     login_manager.login_message_category = 'info'
     app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)
-
 
     app.jinja_env.filters['format_duration'] = format_duration
 
