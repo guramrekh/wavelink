@@ -23,11 +23,6 @@ instance/
 *.db
 *.db3
 
-# --- Migrations ---
-# Usually NEEDED in the image to run upgrades, but uncomment
-# the line below if you run migrations outside the main app image build.
-# migrations/
-
 # --- Git ---
 .git/
 .gitignore
@@ -58,12 +53,11 @@ coverage.xml
 Thumbs.db
 
 # --- Secrets ---
-# Environment variable files (pass secrets via Docker env vars)
 .env
 *.env
 
 # --- Logs ---
 *.log
 
---- Helper Scripts ---
+# --- Helper Scripts ---
 helper_scripts/
