@@ -16,6 +16,10 @@ def create_playlist():
     form = PlaylistCreationForm()
 
     if form.validate_on_submit():
+        if Playlist.query.filter_by(name=form.name.data).first():
+            flash('Playlist with that name already exists', 'danger')
+            return redirect(url_for('playlist.create_playlist'))
+
         cover_filename = None
         if form.cover_photo.data:
             cover_filename = save_picture(form.cover_photo.data, 'playlists')
@@ -75,6 +79,13 @@ def edit_playlist(playlist_id):
 
     form = PlaylistUpdateForm()
     if form.validate_on_submit():
+        if Playlist.query.filter_by(
+                Playlist.name == form.name.data,
+                Playlist.id != playlist_id
+            ).first():
+            flash('Playlist with that name already exists', 'danger')
+            return redirect(url_for('playlist.edit_playlist', playlist_id=playlist_id))
+
         old_cover_fn = playlist.cover_photo
         new_cover_fn = 'default_cover.jpg' if form.restore_default_cover.data else save_picture(form.cover_photo.data, 'playlists')
 
@@ -235,7 +246,9 @@ def save_playlist(playlist_id):
     origin_view = request.form.get('origin_view', 'my')
     viewed_username = request.form.get('username')
 
-    # TODO: playlist id validation
+    if not Playlist.query.get(playlist_id):
+        flash('Playlist not found', 'danger')
+        return redirect(url_for('main.account', view=origin_view))
 
     if viewed_username == current_user.username:
         flash('You cannot save your own playlist', 'danger')

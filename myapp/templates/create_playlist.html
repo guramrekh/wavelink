@@ -13,6 +13,18 @@
 </head>
 
 <body>
+  <div class="flash-messages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show custom-alert" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+  
   <nav class="navbar">
     <div class="nav-container">
       <a href="{{ url_for('main.home') }}" class="nav-logo">WaveLink</a>
@@ -31,15 +43,6 @@
           <div class="legend-container">
             <legend class="legend-text">Create Playlist</legend> 
           </div>
-          {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-              {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
-                  {{ message }}
-                </div>
-              {% endfor %}
-            {% endif %}
-          {% endwith %}
 
           <div class="form-group">
               {{ form.name.label(class="form-control-label") }}
@@ -95,6 +98,15 @@
     </div>
   </main>
 
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      setTimeout(function() {
+        $('.custom-alert').alert('close');
+      }, 3000);
+    });
+  </script>
 </body>
 
 </html>
