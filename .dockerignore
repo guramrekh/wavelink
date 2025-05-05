@@ -60,4 +60,4 @@ Thumbs.db
 *.log
 
 # --- Helper Scripts ---
-helper_scripts/
+init_db.py
