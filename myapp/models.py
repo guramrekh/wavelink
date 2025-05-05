@@ -14,9 +14,15 @@ class User(db.Model, UserMixin):
     bio = db.Column(db.Text)
     profile_picture = db.Column(db.String(20), nullable=False, default='default_pfp.jpg')
 
-    playlists = db.relationship("Playlist", backref="author", lazy=True)
-    comments = db.relationship("Comment", backref="user", lazy=True)
-    likes = db.relationship("Like", backref="user", lazy=True)
+    playlists = db.relationship("Playlist", back_populates="author", lazy=True, foreign_keys="Playlist.user_id", cascade="all, delete-orphan")
+    comments = db.relationship("Comment", back_populates="user", lazy=True, cascade="all, delete-orphan")
+    likes = db.relationship("Like", back_populates="user", lazy=True, cascade="all, delete-orphan")
+    saved_playlist_links = db.relationship('SavedPlaylist', back_populates='user',
+                                        lazy='dynamic', cascade='all, delete-orphan')
+
+    @property
+    def saved_playlists(self):
+        return [link.playlist for link in self.saved_playlist_links]
 
     def __repr__(self):
         return f"<User: '{self.username}', '{self.email}', '{self.profile_picture}'>"
@@ -33,9 +39,16 @@ class Playlist(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
-    comments = db.relationship("Comment", backref="playlist", lazy=True)
-    likes = db.relationship("Like", backref="playlist", lazy=True)
-    tracks = db.relationship('PlaylistTrack', backref='playlist', lazy='dynamic', cascade="all, delete-orphan")
+    author = db.relationship("User", back_populates="playlists", foreign_keys=[user_id])
+    comments = db.relationship("Comment", back_populates="playlist", lazy=True, cascade="all, delete-orphan")
+    likes = db.relationship("Like", back_populates="playlist", lazy=True, cascade="all, delete-orphan")
+    tracks = db.relationship('PlaylistTrack', back_populates='playlist', lazy='dynamic', cascade="all, delete-orphan")
+    saved_by_links = db.relationship('SavedPlaylist', back_populates='playlist',
+                                    lazy='dynamic', cascade='all, delete-orphan')
+
+    @property
+    def savers(self):
+        return [link.user for link in self.saved_by_links]
 
     @property
     def total_duration(self):
@@ -45,6 +58,23 @@ class Playlist(db.Model):
         return f"<Playlist: name='{self.name}', author_id={self.user_id}, visibility='{self.visibility}', created='{self.creation_date}'>"
 
 
+class SavedPlaylist(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    playlist_id = db.Column(db.Integer, db.ForeignKey('playlist.id'), nullable=False)
+    saved_on = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', back_populates='saved_playlist_links')
+    playlist = db.relationship('Playlist', back_populates='saved_by_links')
+
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'playlist_id', name='uq_user_playlist_save'),
+    )
+
+    def __repr__(self):
+        return f"<SavedPlaylist user_id={self.user_id} playlist_id={self.playlist_id} saved_on='{self.saved_on}'>"
+
+
 class Track(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     external_id = db.Column(db.String(128), unique=True, nullable=False)
@@ -52,6 +82,8 @@ class Track(db.Model):
     artist = db.Column(db.String(128), nullable=False)
     album = db.Column(db.String(128)) 
     duration = db.Column(db.Integer)
+
+    playlist_links = db.relationship('PlaylistTrack', back_populates='track', cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Track: title='{self.title}', artist='{self.artist}', external_id='{self.external_id}'>"
@@ -63,7 +95,8 @@ class PlaylistTrack(db.Model):
     track_id = db.Column(db.Integer, db.ForeignKey('track.id'), nullable=False)
     order = db.Column(db.Integer, default=0)
 
-    track = db.relationship('Track', backref='playlist_links')
+    playlist = db.relationship('Playlist', back_populates='tracks')
+    track = db.relationship('Track', back_populates='playlist_links')
 
     __table_args__ = (
         db.UniqueConstraint('playlist_id', 'track_id', name='unique_playlist_track'),
@@ -77,6 +110,9 @@ class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     playlist_id = db.Column(db.Integer, db.ForeignKey("playlist.id"), nullable=False)
+
+    user = db.relationship("User", back_populates="likes")
+    playlist = db.relationship("Playlist", back_populates="likes")
 
     __table_args__ = (
         db.UniqueConstraint("user_id", "playlist_id", name="unique_like"),
@@ -93,6 +129,9 @@ class Comment(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     playlist_id = db.Column(db.Integer, db.ForeignKey("playlist.id"), nullable=False)
+
+    user = db.relationship("User", back_populates="comments")
+    playlist = db.relationship("Playlist", back_populates="comments")
 
     def __repr__(self):
         return f"<Comment: user_id={self.user_id}, playlist_id={self.playlist_id}, published={self.publication_date}>"

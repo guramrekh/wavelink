@@ -27,7 +27,7 @@
   <nav class="navbar">
     <div class="nav-container">
       <a href="{{ url_for('main.home') }}" class="nav-logo">WaveLink</a>
-      
+
       <div class="search-container">
         <form action="{{ url_for('main.search_user') }}" method="GET" class="search-form">
           <input type="text" name="q" placeholder="Search users..." class="search-input">
@@ -36,9 +36,9 @@
           </button>
         </form>
       </div>
-
+      
       <div class="nav-links">
-        <a href="{{ url_for('main.account', view=current_view) }}">Account</a>
+        <a href="{{ url_for('main.account') }}">Account</a>
         <a href="{{ url_for('auth.logout') }}">Logout</a>
       </div>
     </div>
@@ -48,17 +48,13 @@
     <section class="playlists-section">
       <div class="playlist-section-header">
         <div class="playlist-view-tabs">
-          <a href="{{ url_for('main.home', view='my') }}"
+          <a href="{{ url_for('main.profile', username=user.username, view='my') }}"
             class="tab-button {% if current_view == 'my' %}active{% endif %}">
-            My Playlists
+            {{ user.username }}'s Playlists
           </a>
-          <a href="{{ url_for('main.home', view='saved') }}"
+          <a href="{{ url_for('main.profile', username=user.username, view='saved') }}"
             class="tab-button {% if current_view == 'saved' %}active{% endif %}">
             Saved
-          </a>
-          <a href="{{ url_for('main.home', view='archived') }}"
-            class="tab-button {% if current_view == 'archived' %}active{% endif %}">
-            Archived
           </a>
         </div>
       </div>
@@ -81,6 +77,13 @@
 
               <div class="playlist-header-right">
                 <div class="playlist-stats header-stats">
+                  <form action="{{ url_for('playlist.save_playlist', playlist_id=playlist.id) }}" method="POST" class="save-playlist-form">
+                    <input type="hidden" name="username" value="{{ user.username }}">
+                    <input type="hidden" name="origin_view" value="{{ current_view }}">
+                    <button type="submit" class="save-playlist-btn" title="Save playlist">
+                      <i class="fas fa-plus"></i>
+                    </button>
+                  </form>
                   <span class="playlist-song-count" title="Number of songs">
                     {{ playlist.tracks.count() }} songs
                   </span>
@@ -137,17 +140,10 @@
         {% endfor %}
       {% else %}
       <p class="no-playlists">
-        {% if current_view == 'archived' %}
-          You have no archived playlists.
-        {% elif current_view == 'saved' %}
-          You have no saved playlists.
+        {% if current_view == 'saved' %}
+          {{ user.username }} has no saved playlists.
         {% else %}
-          You have no active playlists.
-          <div class="create-playlist-container">
-            <a href="{{ url_for('playlist.create_playlist') }}" class="btn btn-primary">
-              <i class="fas fa-plus"></i> Create New Playlist
-            </a>
-          </div>
+          {{ user.username }} has no active playlists.
         {% endif %}
       </p>
       {% endif %}
@@ -155,8 +151,8 @@
 
     <aside class="user-info-section">
       <img src="{{ user_pfp }}" alt="Profile Picture" class="profile-pic">
-      <h3>{{ current_user.username }}</h3>
-      <p class="user-bio">{{ current_user.bio or 'No bio provided.' }}</p>
+      <h3>{{ user.username }}</h3>
+      <p class="user-bio">{{ user.bio or 'No bio provided.' }}</p>
       <hr class="info-divider">
       <p><strong>Playlists:</strong> {{ playlists|length }}</p>
     </aside>

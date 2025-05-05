@@ -33,7 +33,7 @@
 
   <nav class="navbar">
     <div class="nav-container">
-      <a href="{{ url_for('main.home') }}" class="nav-logo">WaveLink</a>
+      <a href="{{ url_for('main.home', view=current_view) }}" class="nav-logo">WaveLink</a>
       <div class="nav-links">
         <a href="{{ url_for('auth.logout') }}">Logout</a>
       </div>
@@ -47,6 +47,10 @@
           <a href="{{ url_for('main.account', view='my') }}"
             class="tab-button {% if current_view == 'my' %}active{% endif %}">
             My Playlists
+          </a>
+          <a href="{{ url_for('main.account', view='saved') }}"
+            class="tab-button {% if current_view == 'saved' %}active{% endif %}">
+            Saved
           </a>
           <a href="{{ url_for('main.account', view='archived') }}"
             class="tab-button {% if current_view == 'archived' %}active{% endif %}">
@@ -66,10 +70,25 @@
               <img src="{{ url_for('static', filename='pictures/playlists/' + playlist.cover_photo) }}"
                   alt="{{ playlist.name }} cover" class="playlist-cover-thumb">
 
-              <span class="playlist-name">{{ playlist.name }}</span>
+              <div class="playlist-title-author-group">
+                <span class="playlist-name">{{ playlist.name }}</span>
+                {% if current_view == 'saved' and playlist.author %}
+                  <a href="{{ url_for('main.profile', username=playlist.author.username) }}" class="playlist-author">
+                    {{ playlist.author.username }}
+                  </a>
+                {% endif %}
+              </div>
 
               <div class="playlist-header-right">
                 <div class="playlist-stats header-stats">
+                  {% if current_view == 'saved' %}
+                    <form action="{{ url_for('playlist.unsave_playlist', playlist_id=playlist.id) }}" method="POST" class="save-playlist-form">
+                      <button type="submit" class="save-playlist-btn" title="Unsave playlist">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                    </form>
+                  {% endif %}
+
                   <span class="playlist-song-count" title="Number of songs">
                     {{ playlist.tracks.count() }} songs
                   </span>
@@ -79,40 +98,41 @@
                   </span>
                 </div>
 
-                <div class="playlist-options">
-                  <button class="options-button" aria-label="Playlist options" title="Options">
-                    <i class="fas fa-ellipsis-v"></i>
-                  </button>
-                  <div class="options-dropdown">
-                    <a href="{{ url_for('playlist.edit_playlist', playlist_id=playlist.id, origin_view=current_view) }}" 
-                      class="dropdown-item"> 
-                      <i class="fas fa-pencil-alt" aria-hidden="true"></i>Edit
-                    </a>
-
-                    <form action="{{ url_for('playlist.toggle_playlist_archive', playlist_id=playlist.id) }}" 
-                        method="POST" class="dropdown-form">
-                      <input type="hidden" name="origin_view" value="{{ current_view }}">
-                      <button type="submit" class="dropdown-item">
-                        {% if playlist.archived %}
-                          <i class="fas fa-box-open" aria-hidden="true"></i>Unarchive 
-                        {% else %}
-                          <i class="fas fa-archive" aria-hidden="true"></i>Archive 
-                        {% endif %}                      
-                      </button>
-                    </form>
-
-                    <form id="delete-form-{{ playlist.id }}"
-                      action="{{ url_for('playlist.delete_playlist', playlist_id=playlist.id) }}"
-                      method="POST" class="dropdown-form">
-                      <input type="hidden" name="origin_view" value="{{ current_view }}">
-                    </form>
-                    <button type="button" class="dropdown-item delete-item"
-                      data-form-id="delete-form-{{ playlist.id }}"> 
-                      <i class="fas fa-trash-alt" aria-hidden="true"></i>Delete
+                {% if current_view != 'saved' %}
+                  <div class="playlist-options">
+                    <button class="options-button" aria-label="Playlist options" title="Options">
+                      <i class="fas fa-ellipsis-v"></i>
                     </button>
-                  </div>
-                </div>
+                    <div class="options-dropdown">
+                      <a href="{{ url_for('playlist.edit_playlist', playlist_id=playlist.id, origin_view=current_view) }}" 
+                        class="dropdown-item"> 
+                        <i class="fas fa-pencil-alt" aria-hidden="true"></i>Edit
+                      </a>
 
+                      <form action="{{ url_for('playlist.toggle_playlist_archive', playlist_id=playlist.id) }}" 
+                          method="POST" class="dropdown-form">
+                        <input type="hidden" name="origin_view" value="{{ current_view }}">
+                        <button type="submit" class="dropdown-item">
+                          {% if playlist.archived %}
+                            <i class="fas fa-box-open" aria-hidden="true"></i>Unarchive 
+                          {% else %}
+                            <i class="fas fa-archive" aria-hidden="true"></i>Archive 
+                          {% endif %}                      
+                        </button>
+                      </form>
+
+                      <form id="delete-form-{{ playlist.id }}"
+                        action="{{ url_for('playlist.delete_playlist', playlist_id=playlist.id) }}"
+                        method="POST" class="dropdown-form">
+                        <input type="hidden" name="origin_view" value="{{ current_view }}">
+                      </form>
+                      <button type="button" class="dropdown-item delete-item"
+                        data-form-id="delete-form-{{ playlist.id }}"> 
+                        <i class="fas fa-trash-alt" aria-hidden="true"></i>Delete
+                      </button>
+                    </div>
+                  </div>
+                {% endif %}
                 <i class="fas fa-chevron-down details-arrow"></i>
               </div>
 
@@ -156,30 +176,32 @@
                       </form>
                     </li>
                   {% else %}
-                    <li class="no-tracks">No tracks in this playlist yet.</li>
+                    <li class="no-tracks">No tracks in the playlist yet.</li>
                   {% endfor %}
                 </ol>
               {% else %}
-                <p class="no-tracks">No tracks in this playlist yet.</p>
+                <p class="no-tracks">No tracks in the playlist yet.</p>
               {% endif %}
 
-              <div class="search-song-form">
-                <form class="song-search-form" data-playlist-id="{{ playlist.id }}">
-                  <div class="form-row">
-                    <div class="form-group">
-                      <input type="text" name="song_title" placeholder="Song Title" required class="form-control">
+              {% if current_view != 'saved' %}
+                <div class="search-song-form">
+                  <form class="song-search-form" data-playlist-id="{{ playlist.id }}">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <input type="text" name="song_title" placeholder="Song Title" required class="form-control">
+                      </div>
+                      <div class="form-group">
+                        <input type="text" name="artist_name" placeholder="Artist Name" required class="form-control">
+                      </div>
                     </div>
-                    <div class="form-group">
-                      <input type="text" name="artist_name" placeholder="Artist Name" required class="form-control">
+                    <div class="form-actions">
+                      <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Search Song to Add
+                      </button>
                     </div>
-                  </div>
-                  <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
-                      <i class="fas fa-search"></i> Search Song to Add
-                    </button>
-                  </div>
-                </form>
-              </div>
+                  </form>
+                </div>
+              {% endif %}
             </div>
           </details>
         {% endfor %}
@@ -187,6 +209,8 @@
         <p class="no-playlists">
           {% if current_view == 'archived' %}
             You have no archived playlists.
+          {% elif current_view == 'saved' %}
+            You have no saved playlists.
           {% else %}
             You have no active playlists.
           {% endif %}

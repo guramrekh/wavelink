@@ -3,7 +3,7 @@ from flask import Blueprint, abort, current_app, flash, jsonify, redirect, rende
 from flask_login import current_user, login_required
 
 from myapp.forms import PlaylistCreationForm, PlaylistUpdateForm
-from myapp.models import Playlist, PlaylistTrack, Track
+from myapp.models import Playlist, PlaylistTrack, Track, SavedPlaylist
 from myapp.extensions import db
 from myapp.routes.utils import save_picture
 
@@ -51,15 +51,15 @@ def delete_playlist(playlist_id):
         file_path = os.path.join(current_app.root_path, 'static/pictures/playlists', cover_fn_to_delete)
         if os.path.exists(file_path):
             os.remove(file_path)
-        else:
-            print(f"Cover file not found, skipping delete: {file_path}")
 
     try:
         db.session.delete(playlist)
         db.session.commit()
+        flash(f"Playlist '{playlist.name}' deleted successfully!", 'success')
     except Exception as e:
         db.session.rollback()
-        print(f"Error deleting playlist {playlist_id}: {e}")
+        # print(f"Error deleting playlist {playlist_id}: {e}")
+        flash('Error deleting playlist.', 'danger')
     
     return redirect(url_for('main.account', view=origin_view))
 
@@ -229,3 +229,68 @@ def remove_track_from_playlist(playlist_id):
     return redirect(url_for('main.account', view=origin_view))
 
 
+@playlist.route('/<int:playlist_id>/save', methods=['POST'])
+@login_required
+def save_playlist(playlist_id):
+    origin_view = request.form.get('origin_view', 'my')
+    viewed_username = request.form.get('username')
+
+    # TODO: playlist id validation
+
+    if viewed_username == current_user.username:
+        flash('You cannot save your own playlist', 'danger')
+        return redirect(url_for('main.profile', username=viewed_username, view=origin_view))
+
+    existing_saved_playlist = SavedPlaylist.query.filter_by(
+        user_id=current_user.id,
+        playlist_id=playlist_id
+    ).first()
+
+    if existing_saved_playlist:
+        flash('Playlist already saved', 'danger')
+        return redirect(url_for('main.profile', username=viewed_username, view=origin_view))
+
+    saved_playlist = SavedPlaylist(
+        user_id=current_user.id,
+        playlist_id=playlist_id
+    )
+    try:
+        db.session.add(saved_playlist)
+        db.session.commit()
+        flash('Playlist saved successfully', 'success')
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error saving playlist: {e}")
+        flash('Failed to save playlist', 'danger')
+    
+    return redirect(url_for('main.profile', username=viewed_username, view=origin_view))
+
+
+@playlist.route('/<int:playlist_id>/unsave', methods=['POST'])
+@login_required
+def unsave_playlist(playlist_id):
+    origin_view = 'saved'
+
+    if not Playlist.query.get(playlist_id):
+        flash('Playlist not found', 'danger')
+        return redirect(url_for('main.account', view=origin_view))
+
+    saved_playlist = SavedPlaylist.query.filter_by(
+        user_id=current_user.id,
+        playlist_id=playlist_id
+    ).first()
+
+    if not saved_playlist:
+        flash('Playlist not saved', 'danger')
+        return redirect(url_for('main.account', view=origin_view))
+
+    try:
+        db.session.delete(saved_playlist)
+        db.session.commit()
+        flash('Playlist unsaved successfully', 'success')
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error unsaving playlist: {e}")
+        flash('Failed to unsave playlist', 'danger')
+
+    return redirect(url_for('main.account', view=origin_view))

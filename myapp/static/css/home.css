@@ -33,6 +33,7 @@ body {
     max-width: 1200px; 
     margin: 0 auto; 
     padding: 0 0.8rem; 
+    gap: 1rem;
 }
 
 .nav-logo {
@@ -54,6 +55,59 @@ body {
     color: var(--dark);
 }
 
+.search-container {
+    flex: 1;
+    max-width: 400px;
+    margin: 0 1rem;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 0.3rem 0.5rem;
+    transition: background-color 0.2s ease;
+}
+
+.search-form:focus-within {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.search-input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--light);
+    padding: 0.3rem 0.5rem;
+    font-size: 0.9rem;
+    width: 100%;
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.search-input:focus {
+    outline: none;
+}
+
+.search-button {
+    background: none;
+    border: none;
+    color: var(--light);
+    padding: 0.3rem 0.5rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.search-button:hover {
+    color: var(--dark);
+}
+
+.search-button i {
+    font-size: 0.9rem;
+}
 
 .home-container {
     display: grid;
@@ -214,14 +268,43 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1); 
 }
 
-.playlist-name {
+.playlist-title-author-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
     flex-shrink: 1;
-    font-size: 1.5rem;
+    min-width: 50px;
     margin-right: 1rem;
+    overflow: hidden;
+}
+
+.playlist-title-author-group .playlist-name {
+    font-size: 1.5rem;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; 
-    min-width: 50px;
+    text-overflow: ellipsis;
+    display: block;
+    margin-right: 0;
+    line-height: 1.2;
+}
+
+.playlist-title-author-group .playlist-author {
+    display: block;
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    margin-top: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+    transition: color 0.2s ease;
+}
+
+.playlist-title-author-group .playlist-author:hover {
+    color: var(--light);
+    text-decoration: underline;
 }
 
 .playlist-stats.header-stats {
@@ -547,6 +630,38 @@ body {
     justify-content: center;
 }
 
+.save-playlist-form {
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 0.75rem;
+}
+
+.save-playlist-btn {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0.2rem 0.4rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    min-height: 24px;
+}
+
+.save-playlist-btn:hover {
+    color: var(--light);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.save-playlist-btn i {
+    font-size: 0.9em;
+}
 
 @media (max-width: 992px) {
     .profile-container {
