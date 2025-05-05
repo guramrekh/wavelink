@@ -153,6 +153,16 @@ body {
     line-height: 1.4;
 }
 
+.user-stats {
+    font-size: 0.95rem;
+    color: #6c757d;
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
 .info-divider {
     border: 0;
     height: 1px;
@@ -160,14 +170,14 @@ body {
     margin: 1rem 0;
 }
 
-.user-info-section p {
+/* .user-info-section p {
     margin-bottom: 0.5rem;
     font-size: 1rem;
-}
+} */
 
-.user-info-section p strong {
+/* .user-info-section p strong {
     color: rgba(0, 0, 0, 0.85);
-}
+} */
 
 
 .playlists-section {

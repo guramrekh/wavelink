@@ -158,7 +158,8 @@
       <h3>{{ current_user.username }}</h3>
       <p class="user-bio">{{ current_user.bio or 'No bio provided.' }}</p>
       <hr class="info-divider">
-      <p><strong>Playlists:</strong> {{ playlists|length }}</p>
+      <p class="user-stats">{{ current_user.public_playlist_count }} Public Playlist{{ 's' if current_user.public_playlist_count != 1 else '' }}</p>
+      <p class="user-stats">{{ current_user.total_saves_received }} Save{{ 's' if current_user.total_saves_received != 1 else '' }} Received</p>
     </aside>
   </main>
 

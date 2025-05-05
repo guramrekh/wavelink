@@ -24,6 +24,17 @@ class User(db.Model, UserMixin):
     def saved_playlists(self):
         return [link.playlist for link in self.saved_playlist_links]
 
+    @property
+    def total_saves_received(self):
+        total_saves = 0
+        for playlist in self.playlists:
+            total_saves += playlist.saved_by_links.count()
+        return total_saves
+        
+    @property
+    def public_playlist_count(self):
+        return Playlist.query.filter_by(author=self, visibility='public').count()
+
     def __repr__(self):
         return f"<User: '{self.username}', '{self.email}', '{self.profile_picture}'>"
 
