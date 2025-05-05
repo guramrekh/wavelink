@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 - Server Error | WaveLink</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/errors.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-content">
+            <i class="fas fa-exclamation-triangle error-icon"></i>
+            <h1 class="error-title">500 - Server Error</h1>
+            <p class="error-message">
+                Oops! Something went wrong on our end. 
+                Please try again later.
+            </p>
+            <div class="error-actions">
+                <a href="{{ url_for('main.home') }}" class="btn-home">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
