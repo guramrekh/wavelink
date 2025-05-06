@@ -62,7 +62,7 @@ def delete_playlist(playlist_id):
         flash(f"Playlist '{playlist.name}' deleted successfully!", 'success')
     except Exception as e:
         db.session.rollback()
-        # print(f"Error deleting playlist {playlist_id}: {e}")
+        print(f"Error deleting playlist {playlist_id}: {e}")
         flash('Error deleting playlist.', 'danger')
     
     return redirect(url_for('main.account', view=origin_view))

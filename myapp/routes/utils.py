@@ -58,9 +58,6 @@ def get_spotify_token():
     client_id = current_app.config.get('SPOTIFY_CLIENT_ID')
     client_secret = current_app.config.get('SPOTIFY_CLIENT_SECRET')
 
-    print(client_id)
-    print(client_secret)
-
     if not client_id or not client_secret:
         print("Error: Spotify Client ID or Secret not configured.")
         return None
