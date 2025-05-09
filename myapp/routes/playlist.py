@@ -79,7 +79,7 @@ def edit_playlist(playlist_id):
 
     form = PlaylistUpdateForm()
     if form.validate_on_submit():
-        if Playlist.query.filter_by(
+        if Playlist.query.filter(
                 Playlist.name == form.name.data,
                 Playlist.id != playlist_id
             ).first():
