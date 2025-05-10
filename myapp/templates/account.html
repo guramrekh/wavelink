@@ -110,8 +110,8 @@
                         <i class="fas fa-pencil-alt" aria-hidden="true"></i>Edit
                       </a>
 
-                      <form action="{{ url_for('playlist.toggle_playlist_archive', playlist_id=playlist.id) }}" 
-                          method="POST" class="dropdown-form">
+                      <form action="{{ url_for('playlist.toggle_playlist_archive', playlist_id=playlist.id) }}" method="POST" class="dropdown-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <input type="hidden" name="origin_view" value="{{ current_view }}">
                         <button type="submit" class="dropdown-item">
                           {% if playlist.archived %}
@@ -123,8 +123,8 @@
                       </form>
 
                       <form id="delete-form-{{ playlist.id }}"
-                        action="{{ url_for('playlist.delete_playlist', playlist_id=playlist.id) }}"
-                        method="POST" class="dropdown-form">
+                        action="{{ url_for('playlist.delete_playlist', playlist_id=playlist.id) }}" method="POST" class="dropdown-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <input type="hidden" name="origin_view" value="{{ current_view }}">
                       </form>
                       <button type="button" class="dropdown-item delete-item"

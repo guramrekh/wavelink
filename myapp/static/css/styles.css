@@ -176,23 +176,68 @@ body {
     color: white;
 }
 
-/* Comment Section Styles */
+
 .playlist-actions {
-  margin-top: 10px;
-  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  background-color: #e9ecef;
+  border-top: 1px solid #a1a3a5;
+  border-bottom: 1px solid #a1a3a5;
 }
+
+.like-form {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.like-btn {
+  background-color: transparent;
+  border: none;
+  color: #777;
+  cursor: pointer;
+  padding: 5px;
+  font-size: 1rem;
+}
+
+.like-btn:hover {
+  color: #555;
+}
+
+.like-btn.liked {
+  color: #ff7f50;
+}
+
+.like-btn.liked:hover {
+  color: #e35b2e;
+}
+
+.like-count {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.action-separator {
+  color: #ccc;
+  margin: 0 8px;
+}
+
 
 .toggle-comments-btn {
   cursor: pointer;
-  color: #6c757d;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.toggle-comments-btn:hover {
+  color: #333;
 }
 
 .comments-section {
   display: none;
-  margin-top: 15px;
   padding: 15px;
   border-top: 1px solid #dee2e6;
-  background-color: #f8f9fa;
+  background-color: #e9ecef;
   border-radius: 0.25rem;
 }
 

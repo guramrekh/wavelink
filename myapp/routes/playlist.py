@@ -3,7 +3,7 @@ from flask import Blueprint, abort, current_app, flash, jsonify, redirect, rende
 from flask_login import current_user, login_required
 
 from myapp.forms import PlaylistCreationForm, PlaylistUpdateForm
-from myapp.models import Playlist, PlaylistTrack, Track, SavedPlaylist
+from myapp.models import Playlist, PlaylistTrack, Track, SavedPlaylist, Like
 from myapp.extensions import db
 from myapp.routes.utils import save_picture
 
@@ -307,3 +307,22 @@ def unsave_playlist(playlist_id):
         flash('Failed to unsave playlist', 'danger')
 
     return redirect(url_for('main.account', view=origin_view))
+
+
+@playlist.route('/<int:playlist_id>/toggle_like', methods=['POST'])
+@login_required
+def toggle_like(playlist_id):
+    playlist = Playlist.query.get_or_404(playlist_id)
+    existing_like = Like.query.filter_by(user_id=current_user.id, playlist_id=playlist.id).first()
+    referring_url = request.referrer or url_for('main.home')
+
+    if existing_like:
+        db.session.delete(existing_like)
+        db.session.commit()
+    else:
+        new_like = Like(user_id=current_user.id, playlist_id=playlist.id)
+        db.session.add(new_like)
+        db.session.commit()
+    
+    return redirect(referring_url)
+

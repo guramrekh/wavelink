@@ -64,6 +64,11 @@ class Playlist(db.Model):
     def total_duration(self):
         return sum(pt.track.duration or 0 for pt in self.tracks.all())
 
+    def is_liked_by_user(self, user):
+        if not user or not user.is_authenticated:
+            return False
+        return any(like.user_id == user.id for like in self.likes)
+
     def __repr__(self):
         return f"<Playlist: name='{self.name}', author_id={self.user_id}, visibility='{self.visibility}', created='{self.creation_date}'>"
 

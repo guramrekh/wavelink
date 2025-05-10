@@ -138,6 +138,14 @@
             </div>
 
             <div class="playlist-actions">
+              <form method="POST" action="{{ url_for('playlist.toggle_like', playlist_id=playlist.id) }}" class="like-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn like-btn {% if playlist.is_liked_by_user(current_user) %}liked{% endif %}" title="Upvote playlist">
+                  <i class="fas fa-arrow-up"></i>
+                </button>
+              </form>
+              <span class="like-count">{{ playlist.likes|length }} Upvote{{ 's' if playlist.likes|length != 1 else '' }}</span>
+              <span class="action-separator">·</span>
               <span class="toggle-comments-btn" data-playlist-id="{{ playlist.id }}">
                 <span class="comment-count-{{ playlist.id }}">{{ playlist.comments|length if playlist.comments else 0 }}</span> Comments
               </span>

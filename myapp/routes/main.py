@@ -2,7 +2,7 @@ from flask import Blueprint, current_app, flash, redirect, render_template, requ
 from flask_login import current_user, login_required
 
 from myapp.forms import AccountUpdateForm
-from myapp.models import Playlist, User, SavedPlaylist, Comment
+from myapp.models import Playlist, User, SavedPlaylist, Comment, Like
 from myapp.extensions import db
 from myapp.routes.utils import formatted_total_duration, save_picture
 
@@ -200,6 +200,7 @@ def delete_comment():
         flash('An error occurred while deleting the comment. Please try again.', 'danger')
 
     return redirect(referring_url)
+
 
 
 
