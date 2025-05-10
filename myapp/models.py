@@ -15,8 +15,8 @@ class User(db.Model, UserMixin):
     profile_picture = db.Column(db.String(20), nullable=False, default='default_pfp.jpg')
 
     playlists = db.relationship("Playlist", back_populates="author", lazy=True, foreign_keys="Playlist.user_id", cascade="all, delete-orphan")
-    comments = db.relationship("Comment", back_populates="user", lazy=True, cascade="all, delete-orphan")
-    likes = db.relationship("Like", back_populates="user", lazy=True, cascade="all, delete-orphan")
+    comments = db.relationship("Comment", back_populates="author", lazy=True, cascade="all, delete-orphan")
+    likes = db.relationship("Like", back_populates="author", lazy=True, cascade="all, delete-orphan")
     saved_playlist_links = db.relationship('SavedPlaylist', back_populates='user',
                                         lazy='dynamic', cascade='all, delete-orphan')
 
@@ -47,7 +47,6 @@ class Playlist(db.Model):
     visibility = db.Column(db.String(10), default="private")
     archived = db.Column(db.Boolean, default=False)
     creation_date = db.Column(db.DateTime, default=datetime.utcnow)
-
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
     author = db.relationship("User", back_populates="playlists", foreign_keys=[user_id])
@@ -122,7 +121,7 @@ class Like(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     playlist_id = db.Column(db.Integer, db.ForeignKey("playlist.id"), nullable=False)
 
-    user = db.relationship("User", back_populates="likes")
+    author = db.relationship("User", back_populates="likes")
     playlist = db.relationship("Playlist", back_populates="likes")
 
     __table_args__ = (
@@ -140,7 +139,7 @@ class Comment(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     playlist_id = db.Column(db.Integer, db.ForeignKey("playlist.id"), nullable=False)
 
-    user = db.relationship("User", back_populates="comments")
+    author = db.relationship("User", back_populates="comments")
     playlist = db.relationship("Playlist", back_populates="comments")
 
     def __repr__(self):

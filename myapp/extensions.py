@@ -11,3 +11,6 @@ bcrypt = Bcrypt()
 from flask_login import LoginManager
 login_manager = LoginManager()
 
+from flask_wtf.csrf import CSRFProtect
+csrf = CSRFProtect()
+

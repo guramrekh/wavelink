@@ -1,3 +1,5 @@
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
 document.addEventListener('DOMContentLoaded', function() {
   // Auto-dismiss for existing server-rendered flash messages
   const existingFlashMessages = document.querySelectorAll('.flash-messages .custom-alert');
@@ -293,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
               method: 'POST',
               headers: { 
                   'Content-Type': 'application/json',
-                  // Potential CSRF token
+                  'X-CSRFToken': csrfToken
               },
               body: JSON.stringify({ track: trackData }) 
             });

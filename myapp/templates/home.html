@@ -65,7 +65,7 @@
 
       {% if playlists %}
         {% for playlist in playlists %}
-          <details class="playlist-item">
+          <details class="playlist-item" open>
             <summary class="playlist-header">
               <img src="{{ url_for('static', filename='pictures/playlists/' + playlist.cover_photo) }}"
                 alt="{{ playlist.name }} cover" class="playlist-cover-thumb">
@@ -133,6 +133,59 @@
                 <p class="no-tracks">No tracks in the playlist yet.</p>
               {% endif %}
             </div>
+
+            <div class="playlist-actions">
+              <span class="toggle-comments-btn" data-playlist-id="{{ playlist.id }}">
+                <span class="comment-count-{{ playlist.id }}">{{ playlist.comments|length if playlist.comments else 0 }}</span> Comments
+              </span>
+            </div>
+
+            <div class="comments-section" id="comments-{{ playlist.id }}">
+              <div class="existing-comments" id="existing-comments-{{ playlist.id }}">
+                {% if playlist.comments and playlist.comments|length > 0 %}
+                  {% for comment in playlist.comments|sort(attribute='publication_date', reverse=True) %}
+                  <div class="comment-item">
+                    <div style="display: flex; align-items: flex-start;">
+                      <img src="{{ url_for('static', filename='pictures/users/' + comment.author.profile_picture) if comment.author.profile_picture else url_for('static', filename='pictures/profile_pics/default_pfp.jpg') }}" alt="{{ comment.author.username }}" class="comment-author-pfp">
+                      <div class="comment-body">
+                        <div class="comment-header">
+                          <a href="{{ url_for('main.profile', username=comment.author.username) }}" class="comment-author">{{ comment.author.username }}</a>
+                          <div class="comment-actions-right">
+                            <span class="comment-date">{{ comment.publication_date.strftime('%d-%b-%y %H:%M') }}</span>
+                            <form method="POST" action="{{ url_for('main.delete_comment') }}" class="delete-comment-form">
+                              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                              <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                              <input type="hidden" name="playlist_id" value="{{ playlist.id }}">
+                              <button type="submit" class="delete-comment-btn" title="Delete comment"
+                                      {% if not (current_user.id == comment.author.id or current_user.id == playlist.author.id) %}
+                                        style="visibility: hidden; pointer-events: none;"
+                                      {% endif %}>
+                                <i class="fas fa-trash-alt"></i>
+                              </button>
+                            </form>
+                          </div>
+                        </div>
+                        <p class="comment-content">{{ comment.content }}</p>
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                {% else %}
+                  <p class="no-comments-message-{{ playlist.id }}">No comments yet. Be the first to comment!</p>
+                {% endif %}
+              </div>
+              <div class="add-comment-section">
+                <form method="POST" action="{{ url_for('main.add_comment') }}" class="add-comment-form">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <input type="hidden" name="playlist_id" value="{{ playlist.id }}">
+                  <input type="text" name="comment_content" class="form-control" placeholder="Write a comment..." required>
+                  <button type="submit" class="btn btn-link">
+                    <i class="fas fa-paper-plane"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+
           </details>
         {% endfor %}
       {% else %}
@@ -166,6 +219,7 @@
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script src="{{ url_for('static', filename='js/comments.js') }}"></script>
   <script>
     $(document).ready(function() {
       setTimeout(function() {

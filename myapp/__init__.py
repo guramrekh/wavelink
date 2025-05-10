@@ -36,11 +36,12 @@ def create_app():
     app.register_blueprint(spotify.spotify)
 
 
-    from myapp.extensions import db, migrate, bcrypt, login_manager
+    from myapp.extensions import db, migrate, bcrypt, login_manager, csrf
     bcrypt.init_app(app)
     login_manager.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db) 
+    csrf.init_app(app)
 
 
     login_manager.login_view = 'auth.login' 
