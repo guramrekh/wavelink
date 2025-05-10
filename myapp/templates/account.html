@@ -84,6 +84,7 @@
                 <div class="playlist-stats header-stats">
                   {% if current_view == 'saved' %}
                     <form action="{{ url_for('playlist.unsave_playlist', playlist_id=playlist.id) }}" method="POST" class="save-playlist-form" id="unsave-form-{{ playlist.id }}">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                       <button type="button" class="save-playlist-btn unsave-btn" title="Unsave playlist" data-form-id="unsave-form-{{ playlist.id }}">
                         <i class="fas fa-minus"></i>
                       </button>
@@ -170,6 +171,7 @@
                       <span class="track-album">{{ playlist_track.track.album or 'Unknown' }}</span>
                       <span class="track-duration">{{ playlist_track.track.duration|format_duration }}</span>
                       <form action="{{ url_for('playlist.remove_track_from_playlist', playlist_id=playlist.id, origin_view=current_view) }}" method="POST" class="delete-track-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <input type="hidden" name="playlist_track_id" value="{{ playlist_track.id }}">
                         <button type="submit" class="btn btn-danger btn-sm" title="Delete track">
                           <i class="fas fa-trash-alt"></i>

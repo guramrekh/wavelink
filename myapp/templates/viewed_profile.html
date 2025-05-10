@@ -78,6 +78,7 @@
               <div class="playlist-header-right">
                 <div class="playlist-stats header-stats">
                   <form action="{{ url_for('playlist.save_playlist', playlist_id=playlist.id) }}" method="POST" class="save-playlist-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="username" value="{{ user.username }}">
                     <input type="hidden" name="origin_view" value="{{ current_view }}">
                     <button type="submit" class="save-playlist-btn" title="Save playlist">
@@ -163,7 +164,7 @@
                           <a href="{{ url_for('main.profile', username=comment.author.username) }}" class="comment-author">{{ comment.author.username }}</a>
                           <div class="comment-actions-right">
                             <span class="comment-date">{{ comment.publication_date.strftime('%d-%b-%y %H:%M') }}</span>
-                            <form method="POST" action="{{ url_for('main.delete_comment') }}" class="delete-comment-form">
+                            <form method="POST" action="{{ url_for('playlist.delete_comment') }}" class="delete-comment-form">
                               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                               <input type="hidden" name="comment_id" value="{{ comment.id }}">
                               <input type="hidden" name="playlist_id" value="{{ playlist.id }}">
@@ -186,7 +187,7 @@
                 {% endif %}
               </div>
               <div class="add-comment-section">
-                <form method="POST" action="{{ url_for('main.add_comment') }}" class="add-comment-form">
+                <form method="POST" action="{{ url_for('playlist.add_comment') }}" class="add-comment-form">
                   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                   <input type="hidden" name="playlist_id" value="{{ playlist.id }}">
                   <input type="text" name="comment_content" class="form-control" placeholder="Write a comment..." required>

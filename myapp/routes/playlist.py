@@ -3,7 +3,7 @@ from flask import Blueprint, abort, current_app, flash, jsonify, redirect, rende
 from flask_login import current_user, login_required
 
 from myapp.forms import PlaylistCreationForm, PlaylistUpdateForm
-from myapp.models import Playlist, PlaylistTrack, Track, SavedPlaylist, Like
+from myapp.models import Playlist, PlaylistTrack, Track, SavedPlaylist, Like, Comment
 from myapp.extensions import db
 from myapp.routes.utils import save_picture
 
@@ -325,4 +325,97 @@ def toggle_like(playlist_id):
         db.session.commit()
     
     return redirect(referring_url)
+
+
+@playlist.route('/add_comment', methods=['POST'])
+@login_required
+def add_comment():
+    playlist_id_str = request.form.get('playlist_id')
+    comment_content = request.form.get('comment_content')
+    referring_url = request.referrer
+
+    if not playlist_id_str:
+        flash('Playlist ID is missing.', 'danger')
+        return redirect(referring_url)
+
+    try:
+        playlist_id = int(playlist_id_str)
+    except ValueError:
+        flash('Invalid Playlist ID format.', 'danger')
+        return redirect(referring_url)
+
+    playlist = Playlist.query.get(playlist_id)
+    if not playlist:
+        flash('Playlist not found.', 'danger')
+        return redirect(referring_url)
+
+    if not comment_content or not comment_content.strip():
+        flash('Comment content cannot be empty.', 'danger')
+        return redirect(referring_url)
+
+    try:
+        new_comment = Comment(
+            content=comment_content.strip(),
+            user_id=current_user.id,
+            playlist_id=playlist_id
+        )
+        db.session.add(new_comment)
+        db.session.commit()
+        flash('Comment added successfully!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('An unexpected error occurred. Please try again.', 'danger')
+
+    return redirect(referring_url)
+
+
+@playlist.route('/delete_comment', methods=['POST'])
+@login_required
+def delete_comment():
+    playlist_id_str = request.form.get('playlist_id')
+    comment_id_str = request.form.get('comment_id')
+    referring_url = request.referrer or url_for('main.home')
+
+    if not playlist_id_str or not comment_id_str:
+        flash('Missing required parameters (playlist_id or comment_id).', 'danger')
+        return redirect(referring_url)
+    
+    try:
+        comment_id = int(comment_id_str)
+    except ValueError:
+        flash('Invalid ID format.', 'danger')
+        return redirect(referring_url)
+
+    comment_to_delete = Comment.query.get(comment_id)
+    if not comment_to_delete:
+        flash('Comment not found.', 'danger')
+        return redirect(referring_url)
+
+    playlist = Playlist.query.get(comment_to_delete.playlist_id)
+    if not playlist:
+        flash('Associated playlist not found. Cannot verify permissions.', 'danger')
+        return redirect(referring_url)
+
+
+    can_delete = False
+    if current_user.id == playlist.user_id:
+        can_delete = True
+    elif current_user.id == comment_to_delete.user_id:
+        can_delete = True
+
+    if not can_delete:
+        flash('You are not authorized to delete this comment.', 'danger')
+        return redirect(referring_url)
+
+    try:
+        db.session.delete(comment_to_delete)
+        db.session.commit()
+        flash('Comment deleted successfully!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('An error occurred while deleting the comment. Please try again.', 'danger')
+
+    return redirect(referring_url)
+
+
 

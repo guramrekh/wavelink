@@ -1,8 +1,6 @@
 # Wavelink - Platform for Sharing Music Playlists
 
-___Wavelink___ is a full-stack web application where you can share your music playlists. It allows users to register, personalize their accounts, create playlists, search songs in Spotify's database and add their favorite ones into their playlists. The platform supports viewing other users' collections and saving their public playlists.
-
-Built with Flask and PostgreSQL, and containerized using Docker, Wavelink provides a responsive, user-friendly interface with image upload support, and persistent playlist storage.
+___Wavelink___ is a full-stack web application where you can create, discover, and share your music playlists. It allows users to register, personalize their accounts, and build collections of their favorite music. The platform features full Spotify integration, enabling users to search through Spotify's vast database to find and add songs to their custom playlists. Beyond just creating personal collections, users can explore playlists created by others, save public playlists to their collection, leave comments to share their thoughts, and upvote playlists they enjoy to help quality content rise to the top. 
 
 ## Prerequisites
 
